@@ -13,6 +13,7 @@ public:
 	explicit Interval(double left, double right, Vertex* source);
 
 	Vertex* sourceVertex();
+	int index();
 
 	double width();
 	double center();

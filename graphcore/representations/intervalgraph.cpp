@@ -136,6 +136,11 @@ void IntervalGraph::_vertexDeleting(Vertex* vertex)
 	_intervals.remove(vertex);
 }
 
+void IntervalGraph::_vertexDeleted(int index)
+{
+	emit intervalDeleted(index);
+}
+
 void IntervalGraph::_graphCleared()
 {
 	_intervals.clear();

@@ -5,12 +5,12 @@
 
 class Interval;
 
-class IntervalDraw: public QGraphicsItem
+class IntervalDraw: public QGraphicsItem, QObject
 {
 	Q_OBJECT
 
 public:
-	IntervalDraw(Interval* source);
+	IntervalDraw(Interval* sourceInterval);
 
 	QRectF boundingRect() const;
 	QPainterPath shape() const;
@@ -19,6 +19,8 @@ public:
 	int level();
 	void setLevel(int newlevel);
 
+	Interval* source();
+
 signals:
 	void levelChanged(IntervalDraw*);
 
@@ -26,6 +28,9 @@ protected:
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+protected slots:
+	void updatePosition();
 
 private:
 	//QVariant itemChange(GraphicsItemChange change, const QVariant &value);

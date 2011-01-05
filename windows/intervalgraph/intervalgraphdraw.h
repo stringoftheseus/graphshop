@@ -34,6 +34,7 @@ private:
 	void keyPressEvent(QKeyEvent *event);
 
 	IntervalDraw* getHoveredInterval();
+	void updateIntervalDrawLevel(IntervalDraw*);
 
 	IntervalGraph* _source;
 
@@ -47,7 +48,6 @@ private slots:
 
 	void intervalAdded(Interval*);
 	void intervalDeleted(Interval*);
-	void intervalMoved(Interval*);
 
 	void intersectionMade(Interval*, Interval*);
 	void intersectionLost(Interval*, Interval*);

@@ -1,11 +1,13 @@
 #include <QKeyEvent>
 #include <QContextMenuEvent>
 
+#include "graphcore/representations/intervalgraph.h"
+#include "graphcore/representations/interval.h"
 
 #include "intervalgraphdraw.h"
 #include "intervaldraw.h"
 
-IntervalGraphDraw::IntervalGraphDraw(Tournament *tournament): tournament(tournament)
+IntervalGraphDraw::IntervalGraphDraw(IntervalGraph *source): _source(source)
 {
 	//setMinimumSize(200, 200);
 
@@ -33,27 +35,27 @@ IntervalGraphDraw::IntervalGraphDraw(Tournament *tournament): tournament(tournam
 	QFont invalidFont;
 	invalidFont.setPixelSize(20);
 	invalidFont.setBold(true);
-	invalidNotice = scene->addText("Invalid Tournament", invalidFont);
+	invalidNotice = scene->addText("Invalid Interval Graph", invalidFont);
 
-	if(tournament->valid())
+	if(source->valid())
 	{
 		scene->removeItem(invalidNotice);
 	}
 
-	scoreDraw = 0;
 
-	for(int i=0; i<tournament->order(); i++)
+	for(int i=0; i<source->intervalCount(); i++)
 	{
-		vertexAdded(i);
+		intervalAdded(source->getInterval(i));
 	}
 
-	connect(tournament, SIGNAL(arcFlipped(int,int)), this, SLOT(arcFlipped(int,int)));
+	connect(source, SIGNAL(intervalAdded(Interval*)), SLOT(intervalAdded(Interval*)));
+	connect(source, SIGNAL(intervalDeleted(int)),     SLOT(intervalDeleted(int)));
 
-	connect(tournament, SIGNAL(vertexAdded(int)),   this, SLOT(vertexAdded(int)));
-	connect(tournament, SIGNAL(vertexDeleted(int)), this, SLOT(vertexDeleted(int)));
+	connect(source, SIGNAL(intersectionMade(Interval*, Interval*)), SLOT(intersectionMade(Interval*, Interval*)));
+	connect(source, SIGNAL(intersectionLost(Interval*, Interval*)), SLOT(intersectionLost(Interval*, Interval*)));
 
-	connect(tournament, SIGNAL(cleared()), this, SLOT(cleared()));
-	connect(tournament, SIGNAL(validityChanged(bool)), this, SLOT(validity(bool)));
+	connect(source, SIGNAL(cleared()), this, SLOT(cleared()));
+	connect(source, SIGNAL(validityChanged(bool)), this, SLOT(validity(bool)));
 }
 
 
@@ -86,8 +88,6 @@ void IntervalGraphDraw::contextMenuEvent(QContextMenuEvent *event)
 
 	QMenu *contextMenu = new QMenu();
 
-	contextMenu->addAction("Flip Arcs", this, SLOT(flipSelectedArcs()));
-	contextMenu->addSeparator();
 	contextMenu->addAction("Delete All", this, SLOT(deleteSelection()));
 	contextMenu->exec(event->globalPos());
 	delete contextMenu;
@@ -240,67 +240,77 @@ void IntervalGraphDraw::dragMoveEvent(QDragMoveEvent *event)
 	QGraphicsView::dragMoveEvent(event);
 }
 
-void IntervalGraphDraw::addArcDraw(int t, int h)
+
+void IntervalGraphDraw::intervalAdded(Interval* interval)
 {
-	TournamentArcDraw* ad = new TournamentArcDraw(vertices[t], vertices[h]);
-	scene->addItem(ad);
+	IntervalDraw* id = new IntervalDraw(interval);
+	scene->addItem(id);
+
+	// New vertices are always added by IntervalGraph without any intersections yet
+	connect(id, SIGNAL(levelChanged(IntervalDraw*)), SLOT(intervalDrawLevelChanged(IntervalDraw*)));
 }
 
-void IntervalGraphDraw::arcFlipped(int v1, int v2)
+void IntervalGraphDraw::intervalDeleted(int)
 {
-	vertices[v1]->getArc(vertices[v2])->flip();
-	updateScore();
+	IntervalDraw* id = _intervals[index];
+	scene->removeItem(id);
+
+	_intervals.removeAll(id);
+
+	// All the intersections should already have been taken care of by intersectionLost
 }
 
-void IntervalGraphDraw::vertexAdded(int index)
+void IntervalGraphDraw::intersectionMade(Interval* i1, Interval i2)
 {
-	TournamentVertexDraw* vd = new TournamentVertexDraw(&vertices);
-	scene->addItem(vd);
+	updateIntervalDrawLevel(_intervals[i1->index()]);
+}
 
-	for(int i=0; i<index; i++)
+void IntervalGraphDraw::intersectionLost(Interval* i1, Interval i2)
+{
+	IntervalDraw* id1 = _intervals[i1->index()];
+	IntervalDraw* id2 = _intervals[i2->index()];
+
+	updateIntervalDrawLevel((id1->level() > id2->level()) ? id1 : id2);
+}
+
+void IntervalGraphDraw::intervalDrawLevelChanged(IntervalDraw* id)
+{
+	foreach(Interval* interval, _source->intersetions(id->source()))
 	{
-		TournamentArcDraw* ad;
-
-		if(tournament->hasArc(i, index))
-		{
-			ad = new TournamentArcDraw(vertices[i], vd);
-		}
-		else
-		{
-			ad = new TournamentArcDraw(vd, vertices[i]);
-		}
-
-		scene->addItem(ad);
+		updateIntervalDrawLevel(_intervals[interval]);
 	}
-
-	updateScore();
 }
 
-void IntervalGraphDraw::vertexDeleted(int index)
+void IntervalGraphDraw::updateIntervalDrawLevel(IntervalDraw* intervalDraw)
 {
-	TournamentVertexDraw* vd = vertices[index];
-	scene->removeItem(vd);
+	int level=0;
+	QList<Interval*> intersections = _source->intersetions(intervalDraw->source());
 
-	vertices.removeAll(vd);
-
-	for(int v=0; v<vertices.count(); v++)
+	do
 	{
-		TournamentVertexDraw* vertex = vertices[v];
-		TournamentArcDraw* ad = vertex->getArc(vd);
-		scene->removeItem(ad);
+		foreach(Interval* otherInterval, intersections)
+		{
+			if(_intervals[otherDraw]->level() == level)
+			{
+				continue;
+			}
+		}
 
-		vertex->removeArc(vd);
-		vertex->update();
-	}
+		break;
 
-	updateScore();
+	} while(++level);
+
+
+	intervalDraw->setLevel(level);
 }
+
+
 
 void IntervalGraphDraw::cleared()
 {
 	scene->clear();
 
-	vertices.clear();
+	_intervals.clear();
 }
 
 void IntervalGraphDraw::validity(bool valid)
@@ -311,18 +321,8 @@ void IntervalGraphDraw::validity(bool valid)
 	{
 		scene->removeItem(invalidNotice);
 
-		for(int i=0; i<vertices.count(); i++)
-		{
-			for(int j=i+1; j<vertices.count(); j++)
-			{
-				TournamentArcDraw* ad = vertices[i]->getArc(vertices[j]);
-
-				if(tournament->hasArc(ad->tail()->index(), ad->head()->index()) == false)
-				{
-					ad->flip();
-				}
-			}
-		}
+		// TODO: Perform any necessary updates to stuff that might have happened during invalidness.
+		// (in reality this probably means rebuilding the entire display)
 	}
 	else
 	{
@@ -338,13 +338,13 @@ void IntervalGraphDraw::keyPressEvent(QKeyEvent *event)
 	}
 }
 
-TournamentVertexDraw* IntervalGraphDraw::getHoveredVertex()
+IntervalDraw* IntervalGraphDraw::getHoveredInterval()
 {
-	foreach(TournamentVertexDraw* vd, vertices)
+	foreach(IntervalDraw* id, _intervals)
 	{
-		if(vd->isUnderMouse())
+		if(id->isUnderMouse())
 		{
-			return vd;
+			return id;
 		}
 	}
 
@@ -353,25 +353,11 @@ TournamentVertexDraw* IntervalGraphDraw::getHoveredVertex()
 
 void IntervalGraphDraw::deleteSelection()
 {
-	foreach(TournamentVertexDraw* vd, vertices)
+	foreach(IntervalDraw* id, _intervals)
 	{
-		if(vd->isSelected())
+		if(id->isSelected())
 		{
-			tournament->removeVertex(vd->index());
-		}
-	}
-}
-
-void IntervalGraphDraw::flipSelectedArcs()
-{
-	for(int i=0; i<vertices.count(); i++)
-	{
-		for(int j=i+1; j<vertices.count(); j++)
-		{
-			if(vertices[i]->getArc(vertices[j])->isSelected())
-			{
-				tournament->flipArc(i, j);
-			}
+			_source->deleteInterval(id->source());
 		}
 	}
 }
@@ -381,26 +367,3 @@ void IntervalGraphDraw::viewAll()
 	fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
 }
 
-void IntervalGraphDraw::addVertex()
-{
-	tournament->addVertex();
-}
-
-void IntervalGraphDraw::updateScore()
-{
-	QList<int> score = tournament->scoreSequence();
-	QStringList scorestring;
-
-	foreach(int item, score)
-	{
-		scorestring << QString::number(item);
-	}
-
-	if(scoreDraw)
-	{
-		scene->removeItem(scoreDraw);
-	}
-
-	scoreDraw = scene->addText("Score: [" + scorestring.join(", ") + "]");
-	scoreDraw->setPos(-14, 15);
-}

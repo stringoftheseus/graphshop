@@ -15,6 +15,11 @@ Vertex* Interval::sourceVertex()
 	return _source;
 }
 
+int Interval::index()
+{
+	return _source->index();
+}
+
 double Interval::width()
 {
 	return rightEdge() - leftEdge();

@@ -27,6 +27,7 @@ public:
 signals:
 	void intervalAdded(Interval*);
 	void intervalDeleting(Interval*);
+	void intervalDeleted(int);
 	void intervalMoved(Interval*);
 
 	void intersectionMade(Interval*, Interval*);
@@ -53,6 +54,7 @@ protected slots:
 
 	virtual void _vertexAdded(Vertex*);
 	virtual void _vertexDeleting(Vertex*);
+	virtual void _vertexDeleted(int);
 
 	virtual void _graphCleared();
 };
