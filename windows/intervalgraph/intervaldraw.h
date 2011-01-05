@@ -3,29 +3,24 @@
 
 #include <QGraphicsItem>
 
+class Interval;
 
 class IntervalDraw: public QGraphicsItem
 {
+	Q_OBJECT
+
 public:
-	IntervalDraw(QList<IntervalDraw*>* vertices);
+	IntervalDraw(Interval* source);
 
 	QRectF boundingRect() const;
 	QPainterPath shape() const;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
-	int radius();
+	int level();
+	void setLevel(int newlevel);
 
-	int index();
-
-	int order();
-	void setOrder(int pos);
-	static void swapOrders(IntervalDraw* one, IntervalDraw* two);
-
-	TournamentArcDraw* getArc(IntervalDraw* vertex);
-	void setArc(IntervalDraw* vertex, TournamentArcDraw* arc);
-	void removeArc(IntervalDraw* vertex);
-
-	void updateSequence();
+signals:
+	void levelChanged(IntervalDraw*);
 
 protected:
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -35,20 +30,12 @@ protected:
 private:
 	//QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
+	Interval* _source;
+
 	bool _drag;
 	QPointF _dragDelta;
 
-
-	int r;
-	int _order;
-
-	IntervalDraw* next;
-	IntervalDraw* prev;
-
-	QList<IntervalDraw*>* vertices;
-	QHash<IntervalDraw*, TournamentArcDraw*> arcs;
-
-	void updatePosition();
+	int _level;
 };
 
 #endif // intervaldraw_h

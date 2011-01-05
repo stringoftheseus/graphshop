@@ -13,7 +13,6 @@ class IntervalGraphDraw : public QGraphicsView
 
 public:
 	IntervalGraphDraw(IntervalGraph* source);
-	~IntervalGraphDraw();
 
 public slots:
 	void viewAll();
@@ -32,8 +31,6 @@ protected:
 	void dragMoveEvent(QDragMoveEvent *event);
 
 private:
-	void addIntervalDraw(Interval*);
-
 	void keyPressEvent(QKeyEvent *event);
 
 	IntervalDraw* getHoveredInterval();
@@ -51,6 +48,11 @@ private slots:
 	void intervalAdded(Interval*);
 	void intervalDeleted(Interval*);
 	void intervalMoved(Interval*);
+
+	void intersectionMade(Interval*, Interval*);
+	void intersectionLost(Interval*, Interval*);
+
+	void intervalDrawLevelChanged(IntervalDraw*);
 
 	void cleared();
 	void validity(bool);

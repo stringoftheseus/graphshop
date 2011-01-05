@@ -22,10 +22,15 @@ public:
 	void addInterval(double left, double right);
 	void deleteInterval(Interval* interval);
 
+	QList<Interval*> intersetions(Interval*);
+
 signals:
 	void intervalAdded(Interval*);
 	void intervalDeleting(Interval*);
 	void intervalMoved(Interval*);
+
+	void intersectionMade(Interval*, Interval*);
+	void intersectionLost(Interval*, Interval*);
 
 	void cleared();
 
@@ -38,6 +43,7 @@ protected:
 	bool _working;
 	double _endpoint;
 	QHash<Vertex*, Interval*> _intervals;
+	QMultiHash<Interval*, Interval*> _intersections;
 
 protected slots:
 	virtual void _intervalMoved(Interval*);

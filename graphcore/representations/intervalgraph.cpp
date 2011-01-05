@@ -53,6 +53,11 @@ void IntervalGraph::deleteInterval(Interval* interval)
 	_source->removeVertex(interval->sourceVertex());
 }
 
+QList<Interval*> IntervalGraph::intersetions(Interval* interval)
+{
+	return _intersections.values(interval);
+}
+
 bool IntervalGraph::_valid()
 {
 	// TODO: Implement this
@@ -79,6 +84,24 @@ void IntervalGraph::_intervalMoved(Interval* interval)
 	}
 
 	emit intervalMoved(interval);
+
+	foreach(Interval* other, _intersections.values(interval))
+	{
+		if(interval->intersects(other) == false)
+		{
+			_intersections.remove(interval, other);
+			emit intersectionLost(interval, other);
+		}
+	}
+
+	foreach(Interval* other, _intervals)
+	{
+		if(_intersections.contains(interval, other) == false && interval->intersects(other))
+		{
+			_intersections.insert(interval, other);
+			emit intersectionMade(interval, other);
+		}
+	}
 }
 
 void IntervalGraph::_edgeAdded(Edge*)
@@ -104,6 +127,11 @@ void IntervalGraph::_vertexDeleting(Vertex* vertex)
 	Interval* interval = _intervals[vertex];
 
 	emit intervalDeleting(interval);
+
+	foreach(Interval* intersect, intersections(interval))
+	{
+		emit intersectionLost(interval, intersect);
+	}
 
 	_intervals.remove(vertex);
 }

@@ -56,10 +56,6 @@ IntervalGraphDraw::IntervalGraphDraw(Tournament *tournament): tournament(tournam
 	connect(tournament, SIGNAL(validityChanged(bool)), this, SLOT(validity(bool)));
 }
 
-IntervalGraphDraw::~IntervalGraphDraw()
-{
-
-}
 
 
 
