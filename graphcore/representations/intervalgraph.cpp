@@ -49,7 +49,7 @@ void IntervalGraph::addInterval(double left, double right, Vertex *vertex)
 		_endpoint = right;
 	}
 
-	connect(interval, SIGNAL(moved(Interval*)), SLOT(checkEdges(Interval*)));
+	connect(interval, SIGNAL(moved(Interval*)), SLOT(_intervalMoved(Interval*)));
 
 	emit intervalAdded(interval);
 }
@@ -86,7 +86,12 @@ void IntervalGraph::_intervalMoved(Interval* interval)
 {
 	foreach(Interval* other, _intervals)
 	{
-		_source->setEdgeMultiplicity(interval->sourceVertex(), other->sourceVertex(), interval->intersects(other));
+		if(interval != other)
+		{
+			_source->blockSignals(true); // We don't want to be notified of this because we're the ones who did it...
+			_source->setEdgeMultiplicity(interval->sourceVertex(), other->sourceVertex(), interval->intersects(other));
+			_source->blockSignals(false);
+		}
 	}
 
 	emit intervalMoved(interval);
@@ -96,15 +101,19 @@ void IntervalGraph::_intervalMoved(Interval* interval)
 		if(interval->intersects(other) == false)
 		{
 			_intersections.remove(interval, other);
+			_intersections.remove(other, interval);
+
 			emit intersectionLost(interval, other);
 		}
 	}
 
 	foreach(Interval* other, _intervals)
 	{
-		if(_intersections.contains(interval, other) == false && interval->intersects(other))
+		if(interval != other && _intersections.contains(interval, other) == false && interval->intersects(other))
 		{
 			_intersections.insert(interval, other);
+			_intersections.insert(other, interval);
+
 			emit intersectionMade(interval, other);
 		}
 	}

@@ -1,3 +1,4 @@
+#include <QtGui>
 #include <QPen>
 #include <QBrush>
 #include <QPainter>
@@ -7,12 +8,12 @@
 
 #include "intervaldraw.h"
 
-#define STRETCH 20
+#define STRETCH 20.0
 
 IntervalDraw::IntervalDraw(Interval *sourceInterval)
 {
 	setLevel(0);
-	_drag = false;
+	_drag = DRAG_NONE;
 
 	_source = sourceInterval;
 
@@ -25,6 +26,7 @@ IntervalDraw::IntervalDraw(Interval *sourceInterval)
 	setFlag(ItemIsSelectable);
 	//setFlag(ItemSendsGeometryChanges);
 	setCacheMode(DeviceCoordinateCache);
+	setAcceptHoverEvents(true);
 }
 
 void IntervalDraw::updatePosition()
@@ -42,7 +44,7 @@ void IntervalDraw::setLevel(int newlevel)
 	bool changed = (_level != newlevel);
 
 	_level = newlevel;
-	setY(-30*_level);
+	setY(-20*_level);
 
 	if(changed)
 	{
@@ -55,13 +57,23 @@ Interval* IntervalDraw::source()
 	return _source;
 }
 
-/*
+void IntervalDraw::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+{
+	setCursor(Qt::SizeAllCursor);
+}
+
+void IntervalDraw::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+	unsetCursor();
+}
+
 void IntervalDraw::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 	QGraphicsItem::mousePressEvent(event);
 
-	_drag = true;
-	_dragDelta = scenePos() - event->scenePos();
+	_drag = DRAG_CENTER;
+
+	_dragDelta = event->scenePos();
 }
 
 
@@ -69,18 +81,10 @@ void IntervalDraw::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
 	//QGraphicsItem::mouseMoveEvent(event);
 
-	if(_drag)
+	if(_drag == DRAG_CENTER)
 	{
-		setPos(event->scenePos().x() + _dragDelta.x(), 0);
-
-		if(next && mapFromItem(next, 0, 0).x() < 0)
-		{
-			swapOrders(this, next);
-		}
-		else if(prev && mapFromItem(prev, 0, 0).x() > 0)
-		{
-			swapOrders(this, prev);
-		}
+		_source->move((event->scenePos().x() - _dragDelta.x()) / STRETCH);
+		_dragDelta = event->scenePos();
 	}
 
 	update();
@@ -88,10 +92,9 @@ void IntervalDraw::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void IntervalDraw::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-	_drag = false;
-	updatePosition();
+	_drag = DRAG_NONE;
 }
-*/
+
 
 
 

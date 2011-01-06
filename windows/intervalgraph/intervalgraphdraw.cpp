@@ -246,6 +246,7 @@ void IntervalGraphDraw::intervalAdded(Interval* interval)
 {
 	IntervalDraw* id = new IntervalDraw(interval);
 	_scene->addItem(id);
+	_intervals.append(id);
 
 	// New vertices are always added by IntervalGraph without any intersections yet
 	connect(id, SIGNAL(levelChanged(IntervalDraw*)), SLOT(intervalDrawLevelChanged(IntervalDraw*)));
@@ -260,6 +261,7 @@ void IntervalGraphDraw::intervalDeleted(int index)
 
 	// All the intersections should already have been taken care of by intersectionLost
 }
+
 
 void IntervalGraphDraw::intersectionMade(Interval* i1, Interval* i2)
 {
@@ -284,23 +286,25 @@ void IntervalGraphDraw::intervalDrawLevelChanged(IntervalDraw* id)
 
 void IntervalGraphDraw::updateIntervalDrawLevel(IntervalDraw* intervalDraw)
 {
-	int level=0;
 	QList<Interval*> intersections = _source->intersections(intervalDraw->source());
 
-	do
+	int level=-1;
+	bool valid=false;
+
+	while(!valid)
 	{
+		level++;
+		valid = true;
+
 		foreach(Interval* otherInterval, intersections)
 		{
 			if(_intervals[otherInterval->index()]->level() == level)
 			{
-				continue;
+				valid = false;
+				break;
 			}
 		}
-
-		break;
-
-	} while(++level);
-
+	}
 
 	intervalDraw->setLevel(level);
 }

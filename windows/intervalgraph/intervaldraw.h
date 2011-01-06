@@ -24,10 +24,14 @@ public:
 signals:
 	void levelChanged(IntervalDraw*);
 
-protected:/*
+protected:
+	enum {DRAG_NONE, DRAG_LEFT, DRAG_CENTER, DRAG_RIGHT} _drag;
+
+	void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+	void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);*/
+	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 protected slots:
 	void updatePosition();
@@ -37,7 +41,6 @@ private:
 
 	Interval* _source;
 
-	bool _drag;
 	QPointF _dragDelta;
 
 	int _level;
