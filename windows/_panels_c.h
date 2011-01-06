@@ -3,6 +3,7 @@
 
 class AdjMatrixWindow;
 class DrawWindow;
+class IntervalGraphWindow;
 class TournamentWindow;
 
 #endif // _PANELS_C_H

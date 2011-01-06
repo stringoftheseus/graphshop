@@ -25,7 +25,7 @@ private slots:
 	void zoomIn();
 	void zoomOut();
 	void zoomAll();
-	void addVertex();
+	void addInterval();
 
 	void updateTitle();
 };

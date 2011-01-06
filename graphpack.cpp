@@ -24,6 +24,9 @@ void GraphPack::build()
 		_drawWindow      = new DrawWindow(_graph, _parent);
 		_panelMenu->addAction(_drawWindow->toggleViewAction());
 
+		_intervalGraphWindow = new IntervalGraphWindow(_graph, _parent);
+		_panelMenu->addAction(_intervalGraphWindow->toggleViewAction());
+
 		_tournamentWindow = new TournamentWindow(_graph, _parent);
 		_panelMenu->addAction(_tournamentWindow->toggleViewAction());
 

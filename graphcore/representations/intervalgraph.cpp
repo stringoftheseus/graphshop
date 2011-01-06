@@ -23,6 +23,11 @@ Interval* IntervalGraph::getInterval(int index)
 	return _intervals.values().at(index);
 }
 
+void IntervalGraph::addInterval()
+{
+	addInterval(_endpoint+1, _endpoint+2);
+}
+
 void IntervalGraph::addInterval(double left, double right)
 {
 	_working = true;
@@ -31,6 +36,7 @@ void IntervalGraph::addInterval(double left, double right)
 
 	addInterval(left, right, vertex);
 }
+
 
 void IntervalGraph::addInterval(double left, double right, Vertex *vertex)
 {
@@ -53,7 +59,7 @@ void IntervalGraph::deleteInterval(Interval* interval)
 	_source->removeVertex(interval->sourceVertex());
 }
 
-QList<Interval*> IntervalGraph::intersetions(Interval* interval)
+QList<Interval*> IntervalGraph::intersections(Interval* interval)
 {
 	return _intersections.values(interval);
 }
@@ -61,7 +67,7 @@ QList<Interval*> IntervalGraph::intersetions(Interval* interval)
 bool IntervalGraph::_valid()
 {
 	// TODO: Implement this
-	return false;
+	return _source->isEmpty();
 }
 
 void IntervalGraph::_build()

@@ -38,7 +38,7 @@ private:
 
 	IntervalGraph* _source;
 
-	QGraphicsScene *_scene;
+	QGraphicsScene* _scene;
 	QGraphicsItem* _invalidNotice;
 
 	QList<IntervalDraw*> _intervals;
@@ -47,7 +47,7 @@ private slots:
 	void deleteSelection();
 
 	void intervalAdded(Interval*);
-	void intervalDeleted(Interval*);
+	void intervalDeleted(int);
 
 	void intersectionMade(Interval*, Interval*);
 	void intersectionLost(Interval*, Interval*);

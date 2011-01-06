@@ -19,10 +19,12 @@ public:
 	int intervalCount();
 	Interval* getInterval(int index);
 
+	void addInterval();
 	void addInterval(double left, double right);
+
 	void deleteInterval(Interval* interval);
 
-	QList<Interval*> intersetions(Interval*);
+	QList<Interval*> intersections(Interval*);
 
 signals:
 	void intervalAdded(Interval*);

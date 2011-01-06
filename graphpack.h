@@ -38,6 +38,7 @@ private:
 
 	AdjMatrixWindow* _adjMatrixWindow;
 	DrawWindow* _drawWindow;
+	IntervalGraphWindow* _intervalGraphWindow;
 	TournamentWindow* _tournamentWindow;
 
 	GraphPack* _competitionGraph;

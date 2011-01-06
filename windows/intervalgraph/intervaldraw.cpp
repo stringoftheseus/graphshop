@@ -16,7 +16,7 @@ IntervalDraw::IntervalDraw(Interval *sourceInterval)
 
 	_source = sourceInterval;
 
-	connect(source, SIGNAL(moved(Interval*)), SLOT(updatePosition()));
+	connect(_source, SIGNAL(moved(Interval*)), SLOT(updatePosition()));
 
 	//setZValue(1);
 
@@ -55,18 +55,16 @@ Interval* IntervalDraw::source()
 	return _source;
 }
 
-
+/*
 void IntervalDraw::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	updateSequence();
-
 	QGraphicsItem::mousePressEvent(event);
 
 	_drag = true;
 	_dragDelta = scenePos() - event->scenePos();
 }
 
-/*
+
 void IntervalDraw::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
 	//QGraphicsItem::mouseMoveEvent(event);
@@ -99,7 +97,7 @@ void IntervalDraw::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 QRectF IntervalDraw::boundingRect() const
 {
-	return QRectF(_source->leftEdge()*STRETCH, -10, _source->width()*STRETCH, 20);
+	return QRectF(_source->leftEdge()*STRETCH, -5, _source->width()*STRETCH, 10);
 }
 
 QPainterPath IntervalDraw::shape() const
@@ -121,9 +119,9 @@ void IntervalDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 	//painter->setBrush(QBrush(background));
 	painter->setPen(QPen(QBrush(Qt::black), width));
 
-	painter->drawLine(l, -10, l, 10);
+	painter->drawLine(l, -5, l, 5);
 	painter->drawLine(l, 0, r, 0);
-	painter->drawLine(r, -10, r, 10);
+	painter->drawLine(r, -5, r, 5);
 
 	//painter->drawText(boundingRect(), Qt::AlignCenter, QString::number(index()));
 	//painter->drawText(QPoint(0, 0), QString::number(x()));

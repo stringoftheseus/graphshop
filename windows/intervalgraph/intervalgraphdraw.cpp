@@ -1,3 +1,4 @@
+#include <QtGui>
 #include <QKeyEvent>
 #include <QContextMenuEvent>
 
@@ -11,12 +12,12 @@ IntervalGraphDraw::IntervalGraphDraw(IntervalGraph *source): _source(source)
 {
 	//setMinimumSize(200, 200);
 
-	scene = new QGraphicsScene(this);
-	scene->setItemIndexMethod(QGraphicsScene::NoIndex);
-	scene->setBackgroundBrush(palette().background());
+	_scene = new QGraphicsScene(this);
+	_scene->setItemIndexMethod(QGraphicsScene::NoIndex);
+	_scene->setBackgroundBrush(palette().background());
 
 	//scene->setSceneRect(-100, -100, 100, 100);
-	setScene(scene);
+	setScene(_scene);
 
 	setViewportUpdateMode(FullViewportUpdate);
 	setRenderHint(QPainter::Antialiasing);
@@ -30,32 +31,32 @@ IntervalGraphDraw::IntervalGraphDraw(IntervalGraph *source): _source(source)
 	setMouseTracking(false);
 	setDragMode(RubberBandDrag);
 
-	scene->clear();
+	_scene->clear();
 
 	QFont invalidFont;
 	invalidFont.setPixelSize(20);
 	invalidFont.setBold(true);
-	invalidNotice = scene->addText("Invalid Interval Graph", invalidFont);
+	_invalidNotice = _scene->addText("Invalid Interval Graph", invalidFont);
 
 	if(source->valid())
 	{
-		scene->removeItem(invalidNotice);
+		_scene->removeItem(_invalidNotice);
 	}
 
 
 	for(int i=0; i<source->intervalCount(); i++)
 	{
-		intervalAdded(source->getInterval(i));
+		intervalAdded(_source->getInterval(i));
 	}
 
-	connect(source, SIGNAL(intervalAdded(Interval*)), SLOT(intervalAdded(Interval*)));
-	connect(source, SIGNAL(intervalDeleted(int)),     SLOT(intervalDeleted(int)));
+	connect(_source, SIGNAL(intervalAdded(Interval*)), SLOT(intervalAdded(Interval*)));
+	connect(_source, SIGNAL(intervalDeleted(int)),     SLOT(intervalDeleted(int)));
 
-	connect(source, SIGNAL(intersectionMade(Interval*, Interval*)), SLOT(intersectionMade(Interval*, Interval*)));
-	connect(source, SIGNAL(intersectionLost(Interval*, Interval*)), SLOT(intersectionLost(Interval*, Interval*)));
+	connect(_source, SIGNAL(intersectionMade(Interval*, Interval*)), SLOT(intersectionMade(Interval*, Interval*)));
+	connect(_source, SIGNAL(intersectionLost(Interval*, Interval*)), SLOT(intersectionLost(Interval*, Interval*)));
 
-	connect(source, SIGNAL(cleared()), this, SLOT(cleared()));
-	connect(source, SIGNAL(validityChanged(bool)), this, SLOT(validity(bool)));
+	connect(_source, SIGNAL(cleared()), this, SLOT(cleared()));
+	connect(_source, SIGNAL(validityChanged(bool)), this, SLOT(validity(bool)));
 }
 
 
@@ -72,7 +73,7 @@ void IntervalGraphDraw::contextMenuEvent(QContextMenuEvent *event)
 	{
 		if(!item->isSelected())
 		{
-			scene->clearSelection();
+			_scene->clearSelection();
 			break;
 		}
 	}
@@ -244,28 +245,28 @@ void IntervalGraphDraw::dragMoveEvent(QDragMoveEvent *event)
 void IntervalGraphDraw::intervalAdded(Interval* interval)
 {
 	IntervalDraw* id = new IntervalDraw(interval);
-	scene->addItem(id);
+	_scene->addItem(id);
 
 	// New vertices are always added by IntervalGraph without any intersections yet
 	connect(id, SIGNAL(levelChanged(IntervalDraw*)), SLOT(intervalDrawLevelChanged(IntervalDraw*)));
 }
 
-void IntervalGraphDraw::intervalDeleted(int)
+void IntervalGraphDraw::intervalDeleted(int index)
 {
 	IntervalDraw* id = _intervals[index];
-	scene->removeItem(id);
+	_scene->removeItem(id);
 
 	_intervals.removeAll(id);
 
 	// All the intersections should already have been taken care of by intersectionLost
 }
 
-void IntervalGraphDraw::intersectionMade(Interval* i1, Interval i2)
+void IntervalGraphDraw::intersectionMade(Interval* i1, Interval* i2)
 {
 	updateIntervalDrawLevel(_intervals[i1->index()]);
 }
 
-void IntervalGraphDraw::intersectionLost(Interval* i1, Interval i2)
+void IntervalGraphDraw::intersectionLost(Interval* i1, Interval* i2)
 {
 	IntervalDraw* id1 = _intervals[i1->index()];
 	IntervalDraw* id2 = _intervals[i2->index()];
@@ -275,22 +276,22 @@ void IntervalGraphDraw::intersectionLost(Interval* i1, Interval i2)
 
 void IntervalGraphDraw::intervalDrawLevelChanged(IntervalDraw* id)
 {
-	foreach(Interval* interval, _source->intersetions(id->source()))
+	foreach(Interval* interval, _source->intersections(id->source()))
 	{
-		updateIntervalDrawLevel(_intervals[interval]);
+		updateIntervalDrawLevel(_intervals[interval->index()]);
 	}
 }
 
 void IntervalGraphDraw::updateIntervalDrawLevel(IntervalDraw* intervalDraw)
 {
 	int level=0;
-	QList<Interval*> intersections = _source->intersetions(intervalDraw->source());
+	QList<Interval*> intersections = _source->intersections(intervalDraw->source());
 
 	do
 	{
 		foreach(Interval* otherInterval, intersections)
 		{
-			if(_intervals[otherDraw]->level() == level)
+			if(_intervals[otherInterval->index()]->level() == level)
 			{
 				continue;
 			}
@@ -308,7 +309,7 @@ void IntervalGraphDraw::updateIntervalDrawLevel(IntervalDraw* intervalDraw)
 
 void IntervalGraphDraw::cleared()
 {
-	scene->clear();
+	_scene->clear();
 
 	_intervals.clear();
 }
@@ -319,14 +320,14 @@ void IntervalGraphDraw::validity(bool valid)
 
 	if(valid)
 	{
-		scene->removeItem(invalidNotice);
+		_scene->removeItem(_invalidNotice);
 
 		// TODO: Perform any necessary updates to stuff that might have happened during invalidness.
 		// (in reality this probably means rebuilding the entire display)
 	}
 	else
 	{
-		scene->addItem(invalidNotice);
+		_scene->addItem(_invalidNotice);
 	}
 }
 
@@ -364,6 +365,11 @@ void IntervalGraphDraw::deleteSelection()
 
 void IntervalGraphDraw::viewAll()
 {
-	fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+	fitInView(_scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+}
+
+void IntervalGraphDraw::addInterval()
+{
+	_source->addInterval();
 }
 

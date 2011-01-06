@@ -3,25 +3,28 @@
 #include <QToolBar>
 #include <QVBoxLayout>
 
+#include "graphcore/representations/intervalgraph.h"
+#include "intervalgraphdraw.h"
+
 #include "intervalgraphwindow.h"
 
 IntervalGraphWindow::IntervalGraphWindow(Graph* graph, GraphShopWindow *parent): GraphWindow(parent)
 {
-	_tournament = new Tournament(graph);
+	_graph = new IntervalGraph(graph);
 
 	updateTitle();
 }
 
-IntervalGraphWindow::IntervalGraphWindow(Tournament *tournament, GraphShopWindow *parent): GraphWindow(parent)
+IntervalGraphWindow::IntervalGraphWindow(IntervalGraph *graph, GraphShopWindow *parent): GraphWindow(parent)
 {
-	_tournament = tournament;
+	_graph = graph;
 
 	updateTitle();
 }
 
 void IntervalGraphWindow::_build()
 {
-	_tournament->build();
+	_graph->build();
 
 
 /*
@@ -102,8 +105,8 @@ void IntervalGraphWindow::_build()
 
 	_toolbar->addSeparator();
 
-	QAction* addVertex = new QAction("V+", _toolbar);
-	_toolbar->addAction(addVertex);
+	QAction* addInterval = new QAction("I+", _toolbar);
+	_toolbar->addAction(addInterval);
 
 
 
@@ -120,7 +123,7 @@ void IntervalGraphWindow::_build()
 	connect(zoomIn,        SIGNAL(triggered()), SLOT(zoomIn()));
 	connect(zoomOut,       SIGNAL(triggered()), SLOT(zoomOut()));
 	connect(zoomAll,       SIGNAL(triggered()), SLOT(zoomAll()));
-	connect(addVertex,     SIGNAL(triggered()), SLOT(addVertex()));
+	connect(addInterval,     SIGNAL(triggered()), SLOT(addInterval()));
 
 /*	connect(rotateCW,      SIGNAL(triggered()), SLOT(rotateCW()));
 	connect(rotateCCW,     SIGNAL(triggered()), SLOT(rotateCCW()));
@@ -129,10 +132,10 @@ void IntervalGraphWindow::_build()
 	connect(layoutGravity, SIGNAL(triggered()), SLOT(layoutGravity()));
 */
 
-	draw = new TournamentDraw(_tournament);
-	widget()->layout()->addWidget(draw);
+	_draw = new IntervalGraphDraw(_graph);
+	widget()->layout()->addWidget(_draw);
 
-	connect(_tournament->source(), SIGNAL(labelChanged(QString)), SLOT(updateTitle()));
+	connect(_graph->source(), SIGNAL(labelChanged(QString)), SLOT(updateTitle()));
 }
 
 /*
@@ -148,25 +151,25 @@ void IntervalGraphWindow::keyPressEvent(QKeyEvent *event)
 
 void IntervalGraphWindow::zoomIn()
 {
-	draw->scale(1.2, 1.2);
+	_draw->scale(1.2, 1.2);
 }
 
 void IntervalGraphWindow::zoomOut()
 {
-	draw->scale(1/1.2, 1/1.2);
+	_draw->scale(1/1.2, 1/1.2);
 }
 
 void IntervalGraphWindow::zoomAll()
 {
-	draw->viewAll();
+	_draw->viewAll();
 }
 
-void IntervalGraphWindow::addVertex()
+void IntervalGraphWindow::addInterval()
 {
-	draw->addVertex();
+	_draw->addInterval();
 }
 
 void IntervalGraphWindow::updateTitle()
 {
-	setTitle("Tournament: " + _tournament->source()->label());
+	setTitle("Interval Graph: " + _graph->source()->label());
 }
