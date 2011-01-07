@@ -18,7 +18,7 @@ void Tournament::_build()
 
 int Tournament::addVertex()
 {
-	blockSignals(true);
+	ignoreSignals(true);
 
 	Vertex* added = _source->addVertex();
 
@@ -30,7 +30,7 @@ int Tournament::addVertex()
 		}
 	}
 
-	blockSignals(false);
+	ignoreSignals(false);
 
 	validate();
 	emit vertexAdded(added->index());
@@ -110,10 +110,7 @@ bool Tournament::_valid()
 
 void Tournament::_arcAdded(Arc*)
 {
-	if(!signalsBlocked())
-	{
-		validate();
-	}
+	validate();
 }
 
 void Tournament::_arcFlipped(Arc* arc)
@@ -123,30 +120,23 @@ void Tournament::_arcFlipped(Arc* arc)
 
 void Tournament::_arcDeleted(int)
 {
-	if(!signalsBlocked())
-	{
-		validate();
-	}
+	validate();
 }
 
 void Tournament::_vertexAdded(Vertex* vertex)
 {
-	if(!signalsBlocked())
-	{
-		validate();
-		emit vertexAdded(vertex->index());
-	}
-
+	validate();
+	emit vertexAdded(vertex->index());
 }
 
 void Tournament::_vertexDeleting(Vertex* vertex)
 {
-	blockSignals(true);
+	ignoreSignals(true);
 }
 
 void Tournament::_vertexDeleted(int index)
 {
-	blockSignals(false);
+	ignoreSignals(false);
 
 	emit vertexDeleted(index);
 	validate();	

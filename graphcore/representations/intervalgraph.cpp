@@ -88,9 +88,9 @@ void IntervalGraph::_intervalMoved(Interval* interval)
 	{
 		if(interval != other)
 		{
-			_source->blockSignals(true); // We don't want to be notified of this because we're the ones who did it...
+			ignoreSignals(true); // We don't want to be notified of this because we're the ones who did it...
 			_source->setEdgeMultiplicity(interval->sourceVertex(), other->sourceVertex(), interval->intersects(other));
-			_source->blockSignals(false);
+			ignoreSignals(false);
 		}
 	}
 

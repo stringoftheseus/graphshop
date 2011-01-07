@@ -23,13 +23,15 @@ signals:
 protected:
 	Graph* _source;
 
+	bool _ignoreSignals;
+	void ignoreSignals(bool);
+
 	void defaultBuild();
 
 	void validate();
 	void setValid(bool);
 	virtual bool _valid() = 0;
 
-protected slots:
 	virtual void _arcAdded(Arc*);
 	virtual void _arcFlipped(Arc*);
 	virtual void _arcDeleting(Arc*);
@@ -46,6 +48,24 @@ protected slots:
 	virtual void _vertexDeleted(int);
 
 	virtual void _graphCleared();
+
+protected slots:
+	void _s_arcAdded(Arc*);
+	void _s_arcFlipped(Arc*);
+	void _s_arcDeleting(Arc*);
+	void _s_arcDeleted(int);
+	void _s_arcDeleted(Vertex*, Vertex*);
+
+	void _s_edgeAdded(Edge*);
+	void _s_edgeDeleting(Edge*);
+	void _s_edgeDeleted(int);
+	void _s_edgeDeleted(Vertex*, Vertex*);
+
+	void _s_vertexAdded(Vertex*);
+	void _s_vertexDeleting(Vertex*);
+	void _s_vertexDeleted(int);
+
+	void _s_graphCleared();
 
 private:
 	void connectGraphSignals();

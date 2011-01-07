@@ -4,6 +4,7 @@
 GraphRepresentation::GraphRepresentation(Graph* source): QObject(source->parent()), _source(0), _built(false)
 {
 	_isvalid = false;
+	_ignoreSignals = false;
 
 	setSource(source);
 }
@@ -87,23 +88,45 @@ void GraphRepresentation::setValid(bool validity)
 
 void GraphRepresentation::connectGraphSignals()
 {
-	connect(_source, SIGNAL(arcAdded(Arc*)),               SLOT(_arcAdded(Arc*)));
-	connect(_source, SIGNAL(arcFlipped(Arc*)),             SLOT(_arcFlipped(Arc*)));
-	connect(_source, SIGNAL(arcDeleting(Arc*)),            SLOT(_arcDeleting(Arc*)));
-	connect(_source, SIGNAL(arcDeleted(int)),              SLOT(_arcDeleted(int)));
-	connect(_source, SIGNAL(arcDeleted(Vertex*, Vertex*)), SLOT(_arcDeleted(Vertex*,Vertex*)));
+	connect(_source, SIGNAL(arcAdded(Arc*)),               SLOT(_s_arcAdded(Arc*)));
+	connect(_source, SIGNAL(arcFlipped(Arc*)),             SLOT(_s_arcFlipped(Arc*)));
+	connect(_source, SIGNAL(arcDeleting(Arc*)),            SLOT(_s_arcDeleting(Arc*)));
+	connect(_source, SIGNAL(arcDeleted(int)),              SLOT(_s_arcDeleted(int)));
+	connect(_source, SIGNAL(arcDeleted(Vertex*, Vertex*)), SLOT(_s_arcDeleted(Vertex*,Vertex*)));
 
-	connect(_source, SIGNAL(edgeAdded(Edge*)),              SLOT(_edgeAdded(Edge*)));
-	connect(_source, SIGNAL(edgeDeleting(Edge*)),           SLOT(_edgeDeleting(Edge*)));
-	connect(_source, SIGNAL(edgeDeleted(int)),              SLOT(_edgeDeleted(int)));
-	connect(_source, SIGNAL(edgeDeleted(Vertex*, Vertex*)), SLOT(_edgeDeleted(Vertex*,Vertex*)));
+	connect(_source, SIGNAL(edgeAdded(Edge*)),              SLOT(_s_edgeAdded(Edge*)));
+	connect(_source, SIGNAL(edgeDeleting(Edge*)),           SLOT(_s_edgeDeleting(Edge*)));
+	connect(_source, SIGNAL(edgeDeleted(int)),              SLOT(_s_edgeDeleted(int)));
+	connect(_source, SIGNAL(edgeDeleted(Vertex*, Vertex*)), SLOT(_s_edgeDeleted(Vertex*,Vertex*)));
 
-	connect(_source, SIGNAL(vertexAdded(Vertex*)),    SLOT(_vertexAdded(Vertex*)));
-	connect(_source, SIGNAL(vertexDeleting(Vertex*)), SLOT(_vertexDeleting(Vertex*)));
-	connect(_source, SIGNAL(vertexDeleted(int)),      SLOT(_vertexDeleted(int)));
+	connect(_source, SIGNAL(vertexAdded(Vertex*)),    SLOT(_s_vertexAdded(Vertex*)));
+	connect(_source, SIGNAL(vertexDeleting(Vertex*)), SLOT(_s_vertexDeleting(Vertex*)));
+	connect(_source, SIGNAL(vertexDeleted(int)),      SLOT(_s_vertexDeleted(int)));
 
-	connect(_source, SIGNAL(graphCleared()), SLOT(_graphCleared()));
+	connect(_source, SIGNAL(graphCleared()), SLOT(_s_graphCleared()));
 }
+
+void GraphRepresentation::ignoreSignals(bool ignore)
+{
+	_ignoreSignals = ignore;
+}
+
+void GraphRepresentation::_s_arcAdded(Arc *arc){if(!_ignoreSignals) _arcAdded(arc);}
+void GraphRepresentation::_s_arcFlipped(Arc *arc){if(!_ignoreSignals) _arcFlipped(arc);}
+void GraphRepresentation::_s_arcDeleting(Arc *arc){if(!_ignoreSignals) _arcDeleting(arc);}
+void GraphRepresentation::_s_arcDeleted(int arc){if(!_ignoreSignals) _arcDeleted(arc);}
+void GraphRepresentation::_s_arcDeleted(Vertex* v1, Vertex* v2){if(!_ignoreSignals) _arcDeleted(v1, v2);}
+
+void GraphRepresentation::_s_edgeAdded(Edge *edge){if(!_ignoreSignals) _edgeAdded(edge);}
+void GraphRepresentation::_s_edgeDeleting(Edge *edge){if(!_ignoreSignals) _edgeDeleting(edge);}
+void GraphRepresentation::_s_edgeDeleted(int edge){if(!_ignoreSignals) _edgeDeleted(edge);}
+void GraphRepresentation::_s_edgeDeleted(Vertex* v1, Vertex* v2){if(!_ignoreSignals) _edgeDeleted(v1, v2);}
+
+void GraphRepresentation::_s_vertexAdded(Vertex *vertex){if(!_ignoreSignals) _vertexAdded(vertex);}
+void GraphRepresentation::_s_vertexDeleting(Vertex *vertex){if(!_ignoreSignals) _vertexDeleting(vertex);}
+void GraphRepresentation::_s_vertexDeleted(int vertex){if(!_ignoreSignals) _vertexDeleted(vertex);}
+
+void GraphRepresentation::_s_graphCleared(){if(!_ignoreSignals) _graphCleared();}
 
 
 void GraphRepresentation::_arcAdded(Arc *arc){}
