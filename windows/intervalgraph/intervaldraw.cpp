@@ -59,7 +59,18 @@ Interval* IntervalDraw::source()
 
 void IntervalDraw::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
-	setCursor(Qt::SizeAllCursor);
+	if(event->scenePos().x() < _source->leftEdge() * STRETCH + 2)
+	{
+		setCursor(Qt::SizeHorCursor);
+	}
+	else if(event->scenePos().x() > _source->rightEdge() * STRETCH - 2)
+	{
+		setCursor(Qt::SizeHorCursor);
+	}
+	else
+	{
+		setCursor(Qt::SizeAllCursor);
+	}
 }
 
 void IntervalDraw::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
@@ -71,7 +82,18 @@ void IntervalDraw::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 	QGraphicsItem::mousePressEvent(event);
 
-	_drag = DRAG_CENTER;
+	if(event->scenePos().x() < _source->leftEdge() * STRETCH + 2)
+	{
+		_drag = DRAG_LEFT;
+	}
+	else if(event->scenePos().x() > _source->rightEdge() * STRETCH - 2)
+	{
+		_drag = DRAG_RIGHT;
+	}
+	else
+	{
+		_drag = DRAG_CENTER;
+	}
 
 	_dragDelta = event->scenePos();
 }
@@ -81,13 +103,34 @@ void IntervalDraw::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
 	//QGraphicsItem::mouseMoveEvent(event);
 
-	if(_drag == DRAG_CENTER)
+	if(_drag != DRAG_NONE)
 	{
-		_source->move((event->scenePos().x() - _dragDelta.x()) / STRETCH);
-		_dragDelta = event->scenePos();
-	}
+		if(_drag == DRAG_LEFT && event->scenePos().x() > _source->rightEdge() * STRETCH)
+		{
+			_drag = DRAG_RIGHT;
+		}
+		else if(_drag == DRAG_RIGHT && event->scenePos().x() < _source->leftEdge() * STRETCH)
+		{
+			_drag = DRAG_LEFT;
+		}
 
-	update();
+
+		if(_drag == DRAG_LEFT)
+		{
+			_source->moveLeftEdge((event->scenePos().x() - _dragDelta.x()) / STRETCH);
+		}
+		else if(_drag == DRAG_RIGHT)
+		{
+			_source->moveRightEdge((event->scenePos().x() - _dragDelta.x()) / STRETCH);
+		}
+		else if(_drag == DRAG_CENTER)
+		{
+			_source->move((event->scenePos().x() - _dragDelta.x()) / STRETCH);
+		}
+
+		_dragDelta = event->scenePos();
+		update();
+	}
 }
 
 void IntervalDraw::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
@@ -100,7 +143,7 @@ void IntervalDraw::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 QRectF IntervalDraw::boundingRect() const
 {
-	return QRectF(_source->leftEdge()*STRETCH, -5, _source->width()*STRETCH, 10);
+	return QRectF(_source->leftEdge()*STRETCH-2, -5, _source->width()*STRETCH+4, 10);
 }
 
 QPainterPath IntervalDraw::shape() const

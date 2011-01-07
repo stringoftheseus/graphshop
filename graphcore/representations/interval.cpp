@@ -50,6 +50,16 @@ void Interval::centerOn(double point)
 	move(point - center());
 }
 
+void Interval::moveLeftEdge(double delta)
+{
+	setEdges(leftEdge()+delta, rightEdge());
+}
+
+void Interval::moveRightEdge(double delta)
+{
+	setEdges(leftEdge(), rightEdge()+delta);
+}
+
 void Interval::move(double delta)
 {
 	setEdges(leftEdge()+delta, rightEdge()+delta);

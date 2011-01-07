@@ -23,6 +23,9 @@ public:
 	bool intersects(Interval* that);
 
 	void centerOn(double point);
+
+	void moveLeftEdge(double delta);
+	void moveRightEdge(double delta);
 	void move(double delta);
 
 	void setLeftEdge(double left);

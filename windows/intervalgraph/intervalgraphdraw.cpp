@@ -38,13 +38,13 @@ IntervalGraphDraw::IntervalGraphDraw(IntervalGraph *source): _source(source)
 	invalidFont.setBold(true);
 	_invalidNotice = _scene->addText("Invalid Interval Graph", invalidFont);
 
-	if(source->valid())
+	if(_source->valid())
 	{
 		_scene->removeItem(_invalidNotice);
 	}
 
 
-	for(int i=0; i<source->intervalCount(); i++)
+	for(int i=0; i<_source->intervalCount(); i++)
 	{
 		intervalAdded(_source->getInterval(i));
 	}
