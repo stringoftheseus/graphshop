@@ -48,7 +48,8 @@ HEADERS += \
     graphcore/representations/interval.h \
     windows/intervalgraph/intervalgraphwindow.h \
     windows/intervalgraph/intervalgraphdraw.h \
-    windows/intervalgraph/intervaldraw.h
+    windows/intervalgraph/intervaldraw.h \
+    graphcore/algorithms/habibmcconnelllexbfs.h
 
 SOURCES += graphcore/vertex.cpp \
 	graphcore/graph.cpp \
@@ -90,7 +91,8 @@ SOURCES += graphcore/vertex.cpp \
     graphcore/representations/interval.cpp \
     windows/intervalgraph/intervalgraphwindow.cpp \
     windows/intervalgraph/intervalgraphdraw.cpp \
-    windows/intervalgraph/intervaldraw.cpp
+    windows/intervalgraph/intervaldraw.cpp \
+    graphcore/algorithms/habibmcconnelllexbfs.cpp
 
 OTHER_FILES += dev/notes.txt
 
