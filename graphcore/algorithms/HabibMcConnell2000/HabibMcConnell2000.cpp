@@ -34,11 +34,22 @@ QList<Vertex*> lexBFSOrder(Graph const* graph)
 
 	for(int i = n; i>=0; i--)
 	{
-		Vertex* x = L.last().takeLast();
+		QList<Vertex*> Llast = L.last();
+		Vertex* x = Llast.takeLast();
+
+		if(Llast.isEmpty())
+		{
+			L.removeLast();
+		}
+		else
+		{
+			L.replace(L.length()-1, Llast);
+		}
+
 
 		Pi.insert(i, x);
 
-		for(int b=0; b< L.length(); b++)
+		for(int b=0; b<L.length(); b++)
 		{
 			QList<Vertex*> Xb = L[b];
 			QList<Vertex*> Y;
