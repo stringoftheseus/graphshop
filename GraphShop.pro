@@ -49,7 +49,10 @@ HEADERS += \
     windows/intervalgraph/intervalgraphwindow.h \
     windows/intervalgraph/intervalgraphdraw.h \
     windows/intervalgraph/intervaldraw.h \
-    graphcore/algorithms/habibmcconnelllexbfs.h
+    graphcore/algorithms/HabibMcConnell2000/rntree.h \
+    graphcore/algorithms/HabibMcConnell2000/vertexnode.h \
+    graphcore/algorithms/HabibMcConnell2000/HabibMcConnell2000.h \
+	graphcore/algorithms/HabibMcConnell2000/cliquetree.h
 
 SOURCES += graphcore/vertex.cpp \
 	graphcore/graph.cpp \
@@ -92,7 +95,9 @@ SOURCES += graphcore/vertex.cpp \
     windows/intervalgraph/intervalgraphwindow.cpp \
     windows/intervalgraph/intervalgraphdraw.cpp \
     windows/intervalgraph/intervaldraw.cpp \
-    graphcore/algorithms/habibmcconnelllexbfs.cpp
+	graphcore/algorithms/HabibMcConnell2000/HabibMcConnell2000.cpp \
+    graphcore/algorithms/HabibMcConnell2000/rntree.cpp \
+	graphcore/algorithms/HabibMcConnell2000/cliquetree.cpp
 
 OTHER_FILES += dev/notes.txt
 
