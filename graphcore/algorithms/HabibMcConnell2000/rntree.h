@@ -12,10 +12,12 @@ public:
 	RNTree(QList<Vertex*> lexBFSOrder);
 	~RNTree();
 
-	QList<VertexNode const*> const preorderNodes();
-	QList<VertexNode const*> const postorderNodes();
+	QList<VertexNode const*>  preorderNodes() const;
+	QList<VertexNode const*> postorderNodes() const;
 private:
 	VertexNode* _root;
+
+	QList<VertexNode const*> postorderNodes(VertexNode const*) const;
 
 	void deleteNode(VertexNode*);
 

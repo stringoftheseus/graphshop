@@ -8,10 +8,10 @@ namespace HabibMcConnell2000 {
 struct VertexNode
 {
 	VertexNode* parent;
-	QList<VertexNode*> children;
+	QSet<VertexNode*> children;
 
 	Vertex* vertex;
-	QList<Vertex*> vertices;
+	QSet<Vertex*> vertices;
 };
 
 } // namespace HabibMcConnell2000

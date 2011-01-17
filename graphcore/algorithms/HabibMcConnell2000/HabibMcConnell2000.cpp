@@ -76,16 +76,38 @@ QList<Vertex*> lexBFSOrder(Graph const* graph)
 
 
 
-/* Algorithm 3, p64: Chordality Test */
+/** Algorithm 3, p64: Chordality Test
+ *
+ * The algorithm used here is the same as that in the algorithm, except that the actual construction
+ * and management of the tree T has been moved into the RNTree class. For that reason, the input has
+ * been modified to include an RNTree should the caller wish to provide one. This allows Algorithm 4
+ * (Clique Tree) to construct a single tree and have it used here and there, instead of having to do
+ * the tree setup calculations twice.
+ */
 bool isChordal(Graph const* graph, RNTree* t)
 {
+	// 0. If we don't have an RNTree yet, make one and start over...
 	if(t == 0)
 	{
 		RNTree T(lexBFSOrder(graph));
 		return isChordal(graph, &T);
 	}
 
-	// The part where we compute the tree t is in the RNTree constructor
+	// 1. The part where we compute the tree t is in the RNTree constructor (rntree.cpp)
+
+	// 2. For each nonroot node in t, verify that RN(x)\parent(x) is a subset of RN(parent(x))
+	foreach(VertexNode const* node, t->postorderNodes())
+	{
+		// RN(x)-RN(parent(x)) should contain 1 vertex only (parent(x)); more than that is bad
+		if(node->parent && (node->vertices - node->parent->vertices).size() > 1)
+		{
+			// 2.1. Since the above check filaed, we know that this is *not* a chordal graph
+			return false;
+		}
+	}
+
+	// 3. The above check passed for every vertex, so this *is* a chordal graph
+	return true;
 }
 
 
