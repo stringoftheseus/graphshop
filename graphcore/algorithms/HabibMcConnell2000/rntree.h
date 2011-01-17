@@ -17,6 +17,7 @@ public:
 private:
 	VertexNode* _root;
 
+	QList<VertexNode const*>  preorderNodes(VertexNode const*) const;
 	QList<VertexNode const*> postorderNodes(VertexNode const*) const;
 
 	void deleteNode(VertexNode*);

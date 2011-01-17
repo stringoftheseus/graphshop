@@ -7,6 +7,8 @@ namespace HabibMcConnell2000 {
 
 struct VertexNode
 {
+	bool parentEdge; // Used by CliqueTree to "remove" an edge from the tree
+
 	VertexNode* parent;
 	QSet<VertexNode*> children;
 

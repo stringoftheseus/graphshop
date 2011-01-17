@@ -3,6 +3,7 @@
 
 #include "graphcore/_graphcore_c.h"
 #include "rntree.h"
+#include "cliquetree.h"
 
 namespace HabibMcConnell2000
 {

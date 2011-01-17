@@ -12,12 +12,16 @@ public:
 	CliqueTree(RNTree const*);
 	~CliqueTree();
 
+	QList<QSet<Vertex*> > cliques();
+
+	QList<VertexNode*> edges(); // All the nodes except the root
+
 protected:
 	VertexNode* _root;
 
 	/* The order in which cliques are "discovered" is important
 	to the algorithm, so this is a list not a set. */
-	QList<VertexNode*> _cliques;
+	QList<VertexNode*> _nodes;
 
 	void deleteNode(VertexNode*);
 };

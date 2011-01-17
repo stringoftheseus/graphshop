@@ -70,6 +70,27 @@ RNTree::RNTree(QList<Vertex*> pi)
 	}
 }
 
+
+QList<VertexNode const*> RNTree::preorderNodes() const
+{
+	return preorderNodes(_root);
+}
+
+QList<VertexNode const*> RNTree::preorderNodes(const VertexNode *) const
+{
+	QList<VertexNode const*> order;
+
+	order.append(node);
+
+	foreach(VertexNode* child, node->children)
+	{
+		order.append(preorderNodes(child));
+	}
+
+	return order;
+}
+
+
 QList<VertexNode const*> RNTree::postorderNodes() const
 {
 	return postorderNodes(_root);
