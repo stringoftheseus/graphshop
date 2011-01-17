@@ -185,7 +185,8 @@ QList<QSet<Vertex*> > cliqueChain(Graph const* graph)
 		else
 		{
 			// 8.1b.1. Pick a pivot x from the pivots stack
-			Vertex* x = pivots
+			Vertex* x = pivots.toList()[0]; // it shouldn't be so hard to pop from a QSet, but it is
+			pivots.remove(x);
 
 			// 8.1b.2. Let xCliques be the set of all maximum cliques containing x
 			foreach(QSet<Vertex*> clique, maxCliques)

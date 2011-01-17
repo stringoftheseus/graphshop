@@ -14,7 +14,7 @@ public:
 
 	QList<QSet<Vertex*> > cliques();
 
-	QList<VertexNode*> edges(); // All the nodes except the root
+	QList<VertexNode*> nodes();
 
 protected:
 	VertexNode* _root;
@@ -22,8 +22,6 @@ protected:
 	/* The order in which cliques are "discovered" is important
 	to the algorithm, so this is a list not a set. */
 	QList<VertexNode*> _nodes;
-
-	void deleteNode(VertexNode*);
 };
 
 } // namespace HabibMcConnell2000
