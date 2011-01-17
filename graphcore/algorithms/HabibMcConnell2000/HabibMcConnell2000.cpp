@@ -47,7 +47,7 @@ QList<Vertex*> lexBFSOrder(Graph const* graph)
 		}
 
 
-		Pi.insert(i, x);
+		Pi.replace(i, x);
 
 		for(int b=0; b<L.length(); b++)
 		{

@@ -1,4 +1,5 @@
 #include "graphcore/_graphcore_h.h"
+#include "graphcore/algorithms/HabibMcConnell2000/HabibMcConnell2000.h"
 #include "interval.h"
 
 #include "intervalgraph.h"
@@ -67,6 +68,9 @@ QList<Interval*> IntervalGraph::intersections(Interval* interval)
 bool IntervalGraph::_valid()
 {
 	// TODO: Implement this
+
+	bool chordal = HabibMcConnell2000::isChordal(_source);
+
 	return _source->isEmpty();
 }
 
