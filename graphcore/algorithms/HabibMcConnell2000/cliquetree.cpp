@@ -4,14 +4,20 @@ namespace HabibMcConnell2000 {
 
 CliqueTree::CliqueTree(RNTree const* t)
 {
-	QMap<VertexNode*, VertexNode*> cliques;
+	QMap<VertexNode const*, VertexNode*> cliques;
 
-	QList<VertexNode const*> nodes = preorderNodes();
-	nodes.removeFirst();
+	QList<VertexNode const*> nodes = t->preorderNodes();
+	//nodes.removeFirst();
 	
 	foreach(VertexNode const* node, nodes)
 	{
-		if(node->vertices - node->parent->vertex == node->parent->vertices)
+		QSet<Vertex*> RNx = node->vertices;
+		if(node->parent)
+		{
+			RNx.remove(node->parent->vertex);
+		}
+
+		if(node->parent && RNx == node->parent->vertices)
 		{
 			cliques[node->parent]->vertices.insert(node->vertex);
 			cliques.insert(node, cliques[node->parent]);
@@ -19,28 +25,30 @@ CliqueTree::CliqueTree(RNTree const* t)
 		else
 		{
 			VertexNode* C = new VertexNode();
-			C->vertices.insert(node->vertex);			
+			C->vertices.insert(node->vertex);
+			C->vertices.unite(node->vertices); // this line isn't in the algorithm
 			
-			if(cliques.contains(node->parent)
+			if(cliques.contains(node->parent))
 			{
-				C.parent = cliques[node->parent];
+				C->parent = cliques[node->parent];
+				C->parentEdge = true;
 			}
 			else
 			{
-				C.parent = 0;
+				C->parent = 0;
+				C->parentEdge = false;
 				_root = C;
 			}
 			 
 			cliques.insert(node, C);
+			_nodes.append(C);
 		}
 	}
-	
-	_nodes = cliques.values();
 }
 
 CliqueTree::~CliqueTree()
 {
-	foreach(VertexNode* node, _nodes_
+	foreach(VertexNode* node, _nodes)
 	{
 		delete node;
 	}

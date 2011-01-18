@@ -38,7 +38,6 @@ void IntervalGraph::addInterval(double left, double right)
 	addInterval(left, right, vertex);
 }
 
-
 void IntervalGraph::addInterval(double left, double right, Vertex *vertex)
 {
 	Interval* interval = new Interval(left, right, vertex);
@@ -67,11 +66,45 @@ QList<Interval*> IntervalGraph::intersections(Interval* interval)
 
 bool IntervalGraph::_valid()
 {
-	// TODO: Implement this
+	QList<QSet<Vertex*> > cliqueChain = HabibMcConnell2000::cliqueChain(_source);
 
-	bool chordal = HabibMcConnell2000::isChordal(_source);
+	if(cliqueChain.isEmpty())
+	{
+		return false;
+	}
+	else
+	{
+		ignoreSignals(true);
 
-	return _source->isEmpty();
+		foreach(Interval* interval, _intervals)
+		{
+			int leftEdge=0, rightEdge=0;
+
+			for(int l=0; l<cliqueChain.length(); l++)
+			{
+				if(cliqueChain[l].contains(interval->sourceVertex()))
+				{
+					leftEdge = 2*l;
+					break;
+				}
+			}
+
+			for(int r=cliqueChain.length()-1; r>=0; r--)
+			{
+				if(cliqueChain[r].contains(interval->sourceVertex()))
+				{
+					rightEdge = 2*r+1;
+					break;
+				}
+			}
+
+			interval->setEdges(leftEdge, rightEdge);
+		}
+
+		ignoreSignals(false);
+
+		return true;
+	}
 }
 
 void IntervalGraph::_build()
@@ -79,7 +112,13 @@ void IntervalGraph::_build()
 	_working = false;
 	_endpoint = 0;
 
-	// TODO: snychronize vertices...
+	foreach(Vertex* vertex, _source->getVertexSet())
+	{
+		if(!_intervals.contains(vertex))
+		{
+			_vertexAdded(vertex);
+		}
+	}
 
 	validate(); // _valid sets interval positions if it is valid
 }
@@ -88,13 +127,16 @@ void IntervalGraph::_build()
 
 void IntervalGraph::_intervalMoved(Interval* interval)
 {
-	foreach(Interval* other, _intervals)
+	if(!signalsIgnored())
 	{
-		if(interval != other)
+		foreach(Interval* other, _intervals)
 		{
-			ignoreSignals(true); // We don't want to be notified of this because we're the ones who did it...
-			_source->setEdgeMultiplicity(interval->sourceVertex(), other->sourceVertex(), interval->intersects(other));
-			ignoreSignals(false);
+			if(interval != other)
+			{
+				ignoreSignals(true); // We don't want to be notified of this because we're the ones who did it...
+				_source->setEdgeMultiplicity(interval->sourceVertex(), other->sourceVertex(), interval->intersects(other));
+				ignoreSignals(false);
+			}
 		}
 	}
 

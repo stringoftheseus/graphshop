@@ -150,7 +150,7 @@ QList<QSet<Vertex*> > cliqueChain(Graph const* graph)
 	QSet<Vertex*> pivots;
 
 	// 8. Process cliques until L contains only singleton classes (i.e., contains n items)
-	int n = graph->vertexCount();
+	int n = maxCliques.length();
 	QList<QSet<Vertex*> > xCliques;
 
 	while(L.length() < n)
@@ -176,8 +176,8 @@ QList<QSet<Vertex*> > cliqueChain(Graph const* graph)
 			Cl.append(Xc.takeLast());
 
 			// 8.1a.3. Replace Xc by Xc\{Cl},{Cl} in L
-			L.replace(i, Xc);
-			L.insert(i+1, Cl);
+			L.replace(i-1, Xc);
+			L.insert(i, Cl);
 
 			// 8.1a.4. Set xCliques = {Cl}
 			xCliques.append(Cl);
@@ -231,8 +231,8 @@ QList<QSet<Vertex*> > cliqueChain(Graph const* graph)
 				}
 			}
 
-			L.replace(Ia, XaM);
-			L.insert(Ia+1, XaI);
+			L.replace(Ia-1, XaM);
+			L.insert(Ia, XaI);
 
 			// 8.1b.5. Let Xb be the last element of L containing a member of xCliques
 			int Ib;
@@ -268,12 +268,12 @@ QList<QSet<Vertex*> > cliqueChain(Graph const* graph)
 				}
 			}
 
-			L.replace(Ib, XbM);
-			L.insert(Ib+1, XbI);
+			L.replace(Ib+1, XbM);
+			L.insert(Ib+2, XbI);
 		}
 
 		// 8.2. Update the pivots based on "remaining" edges in the CliqueTree
-		foreach(VertexNode* node, cliqueTree.edges())
+		foreach(VertexNode* node, cliqueTree.nodes())
 		{
 			if(node->parentEdge)
 			{
@@ -284,6 +284,8 @@ QList<QSet<Vertex*> > cliqueChain(Graph const* graph)
 				   || (xCliques.contains(Cj) && !xCliques.contains(Ci)))
 				{
 					pivots += Ci.intersect(Cj);
+
+					node->parentEdge = false;
 				}
 			}
 		}
@@ -292,9 +294,18 @@ QList<QSet<Vertex*> > cliqueChain(Graph const* graph)
 	// 9. Create the clique chain from L by converting singleton lists to bare sets
 	QList<QSet<Vertex*> > cliqueChain;
 
+	qDebug() << "Cliques:";
 	foreach(QList<QSet<Vertex*> > cliqueList, L)
 	{
 		cliqueChain.append(cliqueList.first());
+
+		QString cstring;
+		foreach(Vertex* v, cliqueList.first())
+		{
+			cstring += QString::number(v->index()) + " ";
+		}
+		qDebug() << cstring;
+
 	}
 
 	// 10. Make sure the cliques containing each vertex are consecutive in L
@@ -308,8 +319,8 @@ QList<QSet<Vertex*> > cliqueChain(Graph const* graph)
 			i++;
 		}
 
-		// 10.2. Find the first clique not containing x
-		while(cliqueChain[i].contains(x))
+		// 10.2. Find the first clique not containing x (if there is one)
+		while(i < cliqueChain.length() && cliqueChain[i].contains(x))
 		{
 			i++;
 		}

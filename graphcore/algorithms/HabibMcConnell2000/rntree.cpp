@@ -76,7 +76,7 @@ QList<VertexNode const*> RNTree::preorderNodes() const
 	return preorderNodes(_root);
 }
 
-QList<VertexNode const*> RNTree::preorderNodes(const VertexNode *) const
+QList<VertexNode const*> RNTree::preorderNodes(const VertexNode* node) const
 {
 	QList<VertexNode const*> order;
 

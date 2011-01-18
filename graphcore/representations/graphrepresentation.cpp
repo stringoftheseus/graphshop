@@ -111,6 +111,11 @@ void GraphRepresentation::ignoreSignals(bool ignore)
 	_ignoreSignals = ignore;
 }
 
+bool GraphRepresentation::signalsIgnored()
+{
+	return _ignoreSignals;
+}
+
 void GraphRepresentation::_s_arcAdded(Arc *arc){if(!_ignoreSignals) _arcAdded(arc);}
 void GraphRepresentation::_s_arcFlipped(Arc *arc){if(!_ignoreSignals) _arcFlipped(arc);}
 void GraphRepresentation::_s_arcDeleting(Arc *arc){if(!_ignoreSignals) _arcDeleting(arc);}

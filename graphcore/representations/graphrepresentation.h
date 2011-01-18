@@ -23,8 +23,8 @@ signals:
 protected:
 	Graph* _source;
 
-	bool _ignoreSignals;
 	void ignoreSignals(bool);
+	bool signalsIgnored();
 
 	void defaultBuild();
 
@@ -74,6 +74,7 @@ private:
 	virtual void _build() = 0;
 
 	bool _isvalid;
+	bool _ignoreSignals;
 };
 
 #endif //GRAPHLINK_H

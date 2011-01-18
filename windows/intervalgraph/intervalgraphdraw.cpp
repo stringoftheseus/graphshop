@@ -49,6 +49,11 @@ IntervalGraphDraw::IntervalGraphDraw(IntervalGraph *source): _source(source)
 		intervalAdded(_source->getInterval(i));
 	}
 
+	foreach(IntervalDraw* draw, _intervals)
+	{
+		 updateIntervalDrawLevel(draw);
+	}
+
 	connect(_source, SIGNAL(intervalAdded(Interval*)), SLOT(intervalAdded(Interval*)));
 	connect(_source, SIGNAL(intervalDeleted(int)),     SLOT(intervalDeleted(int)));
 
