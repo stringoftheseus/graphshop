@@ -9,27 +9,33 @@ namespace HabibMcConnell2000 {
  *
  * The implementation here is identical to that in the paper with the following exceptions:
  *
- *     1. In keeping with standard computer science tradition (and the rest of the GraphShop API) we
+ *     1. The input is a component (a QList<Vertex*>) rather than a Graph. This is because the paper
+ *        assumes that the given graph is connected, where in real life it often isn't. So to enable
+ *        this to work (instead of blowing up) on unconnected graphs, we run the entire algorithm on
+ *        each component of the graph we're given, then combine the resulting clique chains in order
+ *        to generate the resulting interval graph.
+ *
+ *     2. In keeping with standard computer science tradition (and the rest of the GraphShop API) we
  *        use 0 to n-1 as the vertex indices in the ordering instead of 1 to n. Using 1 to n as done
  *        in the paper would require we either have an extra dummy element at index 0 of the list or
  *        use a QMap<int, Vertex*> instead of a QList<Vertex*>, both of which would complicate using
  *        the Lex-BFS ordering down the road.
  *
- *     2. We build the order directly as a QList of vertices, instead of making a map of vertices to
+ *     3. We build the order directly as a QList of vertices, instead of making a map of vertices to
  *        integers first and then returning the inverse of that map as the order.
  *
- *     3. Because the algorithm fills the order from back to front, we prepopulate the order list to
+ *     4. Because the algorithm fills the order from back to front, we prepopulate the order list to
  *        contain n null pointers at the beginnning so that we have all n slots to write to.
  */
-QList<Vertex*> lexBFSOrder(Graph const* graph)
+QList<Vertex*> lexBFSOrder(QList<Vertex*> component)
 {
-	int n = graph->vertexCount()-1;
+	int n = component.length()-1;
 
 	QList<Vertex*> Pi;
 	for(int i=0; i<=n; i++) Pi.append(0);
 
 	QList<QList<Vertex*> > L;
-	L.append(graph->getVertexSet());
+	L.append(component);
 
 
 	for(int i = n; i>=0; i--)
@@ -84,13 +90,13 @@ QList<Vertex*> lexBFSOrder(Graph const* graph)
  * (Clique Tree) to construct a single tree and have it used here and there, instead of having to do
  * the tree setup calculations twice.
  */
-bool isChordal(Graph const* graph, RNTree* t)
+bool isChordal(QList<Vertex*> component, RNTree* t)
 {
 	// 0. If we don't have an RNTree yet, make one and start over...
 	if(t == 0)
 	{
-		RNTree T(lexBFSOrder(graph));
-		return isChordal(graph, &T);
+		RNTree T(lexBFSOrder(component));
+		return isChordal(component, &T);
 	}
 
 	// 1. The part where we compute the tree t is in the RNTree constructor (rntree.cpp)
@@ -115,22 +121,53 @@ bool isChordal(Graph const* graph, RNTree* t)
 // Incorporated into the CliqueTree class constructor
 
 
+/** Graph Component Splitter for Interval Graph Recognition
+ *
+ * This function doesn't actually do anything itself, other than call the other cliqueChain function
+ * once for each component of the given graph, and return the combined result. The algorithm used to
+ * find the clique chain (and thus the interval representation of the graph) assumes the given graph
+ * is connected, whereas in real life it often isn't. This little wrapper is how we make it work for
+ * all graphs in real life.
+ *
+ * If the algorithm fails to find a clique chain for any component of a graph, than the entire graph
+ * is not an interval graph and we return an empty list.
+ */
+QList<QSet<Vertex*> > cliqueChain(Graph const* graph)
+ {
+	QList<QSet<Vertex*> > cliqueChain;
+	foreach(QList<Vertex*> component, graph->getComponents())
+	{
+		QList<QSet<Vertex*> > cliques = HabibMcConnell2000::cliqueChain(component);
+
+		if(!cliques.isEmpty())
+		{
+			cliqueChain.append(cliques);
+		}
+		else
+		{
+			return QList<QSet<Vertex*> >();
+		}
+	}
+
+	return cliqueChain;
+ }
+
 /** Algorithm 9, p76: Interval Graph Recognition (via Clique Partition Refinement)
  *
  * If the given graph is found to be a valid interval graph, this function returns a clique chain of
  * the graph from which an interval representation can easily be created. If the graph isn't a valid
  * interval graph, the return value is an empty List.
  */
-QList<QSet<Vertex*> > cliqueChain(Graph const* graph)
+QList<QSet<Vertex*> > cliqueChain(QList<Vertex*> component)
 {
 	// 1. Compute a Lex-BFS ordering of the vertices in the graph
-	QList<Vertex*> lexBFS = lexBFSOrder(graph);
+	QList<Vertex*> lexBFS = lexBFSOrder(component);
 
-	// 2. Use the Lex-BFS ordering to create an RNTree for the graph
+	// 2. Use the Lex-BFS ordering to ceate an RNTree for the graph
 	RNTree rnTree(lexBFS);
 
 	// 3. Use the RNTree to verify that the graph is chordal
-	if(!isChordal(graph, &rnTree))
+	if(!isChordal(component, &rnTree))
 	{
 		// 3a. If it ain't chordal, it ain't interval (retrurn an empty list to signal false)
 		return QList<QSet<Vertex*> >();
@@ -231,8 +268,11 @@ QList<QSet<Vertex*> > cliqueChain(Graph const* graph)
 				}
 			}
 
-			L.replace(Ia-1, XaM);
-			L.insert(Ia, XaI);
+			Ia--;
+			L.removeAt(Ia);
+
+			if(!XaM.isEmpty()) L.insert(Ia++, XaM);
+			if(!XaI.isEmpty()) L.insert(Ia, XaI);
 
 			// 8.1b.5. Let Xb be the last element of L containing a member of xCliques
 			int Ib;
@@ -268,8 +308,11 @@ QList<QSet<Vertex*> > cliqueChain(Graph const* graph)
 				}
 			}
 
-			L.replace(Ib+1, XbM);
-			L.insert(Ib+2, XbI);
+			Ib++;
+			L.removeAt(Ib);
+
+			if(!XbI.isEmpty()) L.insert(Ib++, XbI);
+			if(!XbM.isEmpty()) L.insert(Ib++, XbM);
 		}
 
 		// 8.2. Update the pivots based on "remaining" edges in the CliqueTree
@@ -305,11 +348,11 @@ QList<QSet<Vertex*> > cliqueChain(Graph const* graph)
 			cstring += QString::number(v->index()) + " ";
 		}
 		qDebug() << cstring;
-
 	}
+	qDebug() << '\n';
 
 	// 10. Make sure the cliques containing each vertex are consecutive in L
-	foreach(Vertex* x, graph->getVertexSet())
+	foreach(Vertex* x, component)
 	{
 		int i=0;
 

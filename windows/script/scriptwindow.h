@@ -5,7 +5,8 @@
 #include <QtScript>
 
 #include "graphcore/graph.h"
-#include "graphshopwindow.h"
+
+class GraphShopWindow;
 
 class ScriptWindow : public QDockWidget
 {

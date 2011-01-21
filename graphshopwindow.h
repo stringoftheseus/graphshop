@@ -7,6 +7,8 @@
 
 #include "graphshopapp.h"
 #include "graphmenu.h"
+#include "windows/script/codewindow.h"
+#include "windows/script/scriptwindow.h"
 
 class GraphPack;
 
@@ -23,9 +25,15 @@ public slots:
 
 	void setFullScreen(bool fullscreen=true);
 
+	CodeWindow* showCodePanel(bool show);
+	ScriptWindow* showScriptPanel(bool show);
+
 private:
 	Graph* _graph;
 	QHash<Graph*, GraphPack*> _graphpacks;
+
+	ScriptWindow* _scriptPanel;
+	CodeWindow* _codePanel;
 
 	QAction* viewSeparator;
 

@@ -251,7 +251,7 @@ void IntervalGraphDraw::intervalAdded(Interval* interval)
 {
 	IntervalDraw* id = new IntervalDraw(interval);
 	_scene->addItem(id);
-	_intervals.append(id);
+	_intervals.insert(interval, id);
 
 	// New vertices are always added by IntervalGraph without any intersections yet
 	connect(id, SIGNAL(levelChanged(IntervalDraw*)), SLOT(intervalDrawLevelChanged(IntervalDraw*)));
@@ -259,10 +259,15 @@ void IntervalGraphDraw::intervalAdded(Interval* interval)
 
 void IntervalGraphDraw::intervalDeleted(int index)
 {
-	IntervalDraw* id = _intervals[index];
-	_scene->removeItem(id);
-
-	_intervals.removeAll(id);
+	foreach(IntervalDraw* draw, _intervals)
+	{
+		if(draw->source()->index() == index)
+		{
+			_scene->removeItem(draw);
+			_intervals.remove(draw->source());
+			break;
+		}
+	}
 
 	// All the intersections should already have been taken care of by intersectionLost
 }
@@ -270,13 +275,13 @@ void IntervalGraphDraw::intervalDeleted(int index)
 
 void IntervalGraphDraw::intersectionMade(Interval* i1, Interval* i2)
 {
-	updateIntervalDrawLevel(_intervals[i1->index()]);
+	updateIntervalDrawLevel(_intervals[i1]);
 }
 
 void IntervalGraphDraw::intersectionLost(Interval* i1, Interval* i2)
 {
-	IntervalDraw* id1 = _intervals[i1->index()];
-	IntervalDraw* id2 = _intervals[i2->index()];
+	IntervalDraw* id1 = _intervals[i1];
+	IntervalDraw* id2 = _intervals[i2];
 
 	updateIntervalDrawLevel((id1->level() > id2->level()) ? id1 : id2);
 }
@@ -285,7 +290,7 @@ void IntervalGraphDraw::intervalDrawLevelChanged(IntervalDraw* id)
 {
 	foreach(Interval* interval, _source->intersections(id->source()))
 	{
-		updateIntervalDrawLevel(_intervals[interval->index()]);
+		updateIntervalDrawLevel(_intervals[interval]);
 	}
 }
 
@@ -303,7 +308,7 @@ void IntervalGraphDraw::updateIntervalDrawLevel(IntervalDraw* intervalDraw)
 
 		foreach(Interval* otherInterval, intersections)
 		{
-			if(_intervals[otherInterval->index()]->level() == level)
+			if(_intervals[otherInterval]->level() == level)
 			{
 				valid = false;
 				break;

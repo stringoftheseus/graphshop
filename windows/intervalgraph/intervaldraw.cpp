@@ -143,7 +143,7 @@ void IntervalDraw::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 QRectF IntervalDraw::boundingRect() const
 {
-	return QRectF(_source->leftEdge()*STRETCH-2, -5, _source->width()*STRETCH+4, 10);
+	return QRectF(_source->leftEdge()*STRETCH-2, -10, _source->width()*STRETCH+4, 15);
 }
 
 QPainterPath IntervalDraw::shape() const
@@ -168,6 +168,14 @@ void IntervalDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 	painter->drawLine(l, -5, l, 5);
 	painter->drawLine(l, 0, r, 0);
 	painter->drawLine(r, -5, r, 5);
+
+	QFont font = painter->font();
+	font.setPixelSize(8);
+	painter->setFont(font);
+
+	QRectF rect = boundingRect();
+	rect.setTop(rect.top()-5);
+	painter->drawText(rect, Qt::AlignCenter, QString::number(_source->index()));
 
 	//painter->drawText(boundingRect(), Qt::AlignCenter, QString::number(index()));
 	//painter->drawText(QPoint(0, 0), QString::number(x()));

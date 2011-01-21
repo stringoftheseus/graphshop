@@ -67,7 +67,7 @@ public:
 
 	Q_INVOKABLE void clear();
 
-	Q_INVOKABLE QList<QList<Vertex*> > getComponents();
+	Q_INVOKABLE QList<QList<Vertex*> > getComponents() const;
 
 	Q_INVOKABLE QString label() const;
 	Q_INVOKABLE void setLabel(QString newLabel);

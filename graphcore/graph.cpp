@@ -405,7 +405,7 @@ void Graph::clear()
 
 
 
-QList<QList<Vertex*> > Graph::getComponents()
+QList<QList<Vertex*> > Graph::getComponents() const
 {
 	QList<QList<Vertex*> > components;
 	QList<Vertex*> vertices = getVertexSet();

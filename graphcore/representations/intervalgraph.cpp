@@ -66,6 +66,11 @@ QList<Interval*> IntervalGraph::intersections(Interval* interval)
 
 bool IntervalGraph::_valid()
 {
+	if(_source->isEmpty())
+	{
+		return true;
+	}
+
 	QList<QSet<Vertex*> > cliqueChain = HabibMcConnell2000::cliqueChain(_source);
 
 	if(cliqueChain.isEmpty())

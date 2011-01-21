@@ -4,6 +4,7 @@
 #include <QHBoxLayout>
 #include <QScriptEngine>
 
+#include "graphshopwindow.h"
 #include "codewindow.h"
 
 CodeWindow::CodeWindow(Graph *graph, GraphShopWindow *parent): QDockWidget(parent), graph(graph)

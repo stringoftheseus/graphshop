@@ -3,9 +3,13 @@
 
 #include <QGraphicsView>
 
-class Interval;
+//class Interval;
+
+#include "graphcore/representations/interval.h"
+#include "intervaldraw.h"
+
 class IntervalGraph;
-class IntervalDraw;
+//class IntervalDraw;
 
 class IntervalGraphDraw : public QGraphicsView
 {
@@ -41,7 +45,7 @@ private:
 	QGraphicsScene* _scene;
 	QGraphicsItem* _invalidNotice;
 
-	QList<IntervalDraw*> _intervals;
+	QHash<Interval*, IntervalDraw*> _intervals;
 
 private slots:
 	void deleteSelection();

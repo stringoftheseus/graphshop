@@ -11,7 +11,7 @@ namespace HabibMcConnell2000 {
  * of Algorithm 3 (Chordality test) but moved into its own class so that it wouldn't have to also be
  * written in Algorithm 4 (Clique tree) which uses the same structure.
  */
-RNTree::RNTree(QList<Vertex*> pi)
+RNTree::RNTree(QList<Vertex*> pi): _root(0)
 {
 	// 1. Construct a VertexNode for each vertex in pi, and keep a map of Vertex->Node
 	QHash<Vertex*, VertexNode*> nodes;

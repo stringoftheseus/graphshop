@@ -11,6 +11,8 @@ GraphShopWindow::GraphShopWindow()
 	//setWindowState(Qt::WindowActive | Qt::WindowMaximized);
 
 	_graph = 0;
+	_scriptPanel = 0;
+	_codePanel = 0;
 
 	QMenuBar* menubar = menuBar();
 
@@ -39,13 +41,13 @@ GraphShopWindow::GraphShopWindow()
 
 		QAction* viewScript = viewMenu->addAction("Script Editor");
 		viewScript->setCheckable(true);
-		viewScript->setChecked(true);
-		//connect(viewScript, SIGNAL(triggered(bool)), SLOT(showScriptPanel(bool)));
+		//viewScript->setChecked(true);
+		connect(viewScript, SIGNAL(triggered(bool)), SLOT(showScriptPanel(bool)));
 
 		QAction* viewCode = viewMenu->addAction("Code Editor");
 		viewCode->setCheckable(true);
-		viewCode->setChecked(true);
-		//connect(viewCode, SIGNAL(triggered(bool)), SLOT(showCodePanel(bool)));
+		//viewCode->setChecked(true);
+		connect(viewCode, SIGNAL(triggered(bool)), SLOT(showCodePanel(bool)));
 
 
 
@@ -78,11 +80,11 @@ GraphShopWindow::GraphShopWindow()
 	tabifyDockWidget(scriptWindow, codeWindow);
 	scriptWindow->raise();*/
 
-	//scriptEngine->globalObject().setProperty("graph", scriptEngine->newQObject(graph));
+	//scriptEngine->globalObject().setProperty("window", scriptEngine->newQObject(this));
 }
 
 
-/*
+
 ScriptWindow* GraphShopWindow::showScriptPanel(bool show)
 {
 	if(!_scriptPanel)
@@ -122,7 +124,7 @@ CodeWindow* GraphShopWindow::showCodePanel(bool show)
 
 	return _codePanel;
 }
-*/
+
 
 void GraphShopWindow::addGraph(Graph *graph)
 {

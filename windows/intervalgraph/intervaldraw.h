@@ -1,5 +1,5 @@
 #ifndef intervaldraw_h
-#define intervalvertexdraw_h
+#define intervaldraw_h
 
 #include <QGraphicsItem>
 

@@ -3,6 +3,7 @@
 #include <QVBoxLayout>
 #include <QScriptEngine>
 
+#include "graphshopwindow.h"
 #include "scriptwindow.h"
 
 ScriptWindow::ScriptWindow(Graph *graph, GraphShopWindow *parent): QDockWidget(parent), graph(graph)
