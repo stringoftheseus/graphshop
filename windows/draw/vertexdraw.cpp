@@ -13,7 +13,7 @@ VertexDraw::VertexDraw(DrawTables *drawtables, Vertex *vertex): tables(drawtable
 	//setZValue(1);
 	r = 10;
 
-	setPos(qrand()%201-100, qrand()%201-100);
+	setPos(qrand()%201, qrand()%201);
 
 	setFlag(ItemIsMovable);
 	setFlag(ItemIsFocusable);

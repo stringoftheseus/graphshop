@@ -1,5 +1,6 @@
 #include <QKeyEvent>
 #include <QContextMenuEvent>
+#include <QtGui>
 
 #include "layout/drawlayout.h"
 
@@ -16,13 +17,15 @@ GraphDraw::GraphDraw(Graph *graph): graph(graph)
 	scene->setItemIndexMethod(QGraphicsScene::NoIndex);
 	scene->setBackgroundBrush(palette().background());
 
-	//scene->setSceneRect(-100, -100, 100, 100);
+	//scene->setSceneRect(-200, -200, 200, 200);
+	//scene->setSceneRect(rect());
 	setScene(scene);
 
 	setViewportUpdateMode(FullViewportUpdate);
 	setRenderHint(QPainter::Antialiasing);
 	setTransformationAnchor(AnchorViewCenter);
-	setResizeAnchor(AnchorViewCenter);
+	//setResizeAnchor(AnchorViewCenter);
+	setAlignment(Qt::AlignTop | Qt::AlignLeft);
 
 	setMode(SELECT);
 
@@ -33,6 +36,11 @@ GraphDraw::GraphDraw(Graph *graph): graph(graph)
 	ghostVertex = new VertexDraw();
 
 	setGraph(graph);
+
+	centerOn(scene->itemsBoundingRect().center());
+
+	connect(scene, SIGNAL(changed(QList<QRectF>)), this, SLOT(updateRect()));
+	updateRect();
 }
 
 GraphDraw::~GraphDraw()
@@ -456,6 +464,30 @@ void GraphDraw::flipSelectedArcs()
 void GraphDraw::viewAll()
 {
 	fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+}
+
+void GraphDraw::resetView()
+{
+	resetTransform();
+}
+
+void GraphDraw::updateRect()
+{
+	QRect visibleRect = visibleRegion().boundingRect();
+	visibleRect.adjust(0, 0, -20, -20);
+
+
+	if(horizontalScrollBar()->isVisible())
+	{
+		visibleRect.adjust(0, 0, 0, -1*horizontalScrollBar()->height()-2);
+	}
+
+	if(verticalScrollBar()->isVisible())
+	{
+		visibleRect.adjust(0, 0, -1*verticalScrollBar()->height()-2, 0);
+	}
+
+	scene->setSceneRect(scene->itemsBoundingRect().united(visibleRect));
 }
 
 void GraphDraw::doLayout(DrawLayout* newLayout, int minVertices)

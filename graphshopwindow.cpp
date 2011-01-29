@@ -8,7 +8,7 @@
 GraphShopWindow::GraphShopWindow()
 {
 	setWindowTitle("GraphShop");
-	//setWindowState(Qt::WindowActive | Qt::WindowMaximized);
+	setWindowState(Qt::WindowActive | Qt::WindowMaximized);
 
 	_graph = 0;
 	_scriptPanel = 0;
@@ -18,7 +18,7 @@ GraphShopWindow::GraphShopWindow()
 
 	QMenu* fileMenu = menubar->addMenu("&File");
 		QMenu* fileNewMenu = fileMenu->addMenu("&New Graph");
-			QAction* newBlankGraph = fileNewMenu->addAction("&Blank Graph", gsApp, SLOT(addNewGraph()));
+			/*QAction* newBlankGraph = */fileNewMenu->addAction("&Blank Graph", gsApp, SLOT(addNewGraph()));
 
 
 		QAction* closeAct = fileMenu->addAction("&Close", this, SLOT(close()));
@@ -28,11 +28,6 @@ GraphShopWindow::GraphShopWindow()
 		QAction* exitAct = fileMenu->addAction("E&xit", qApp, SLOT(closeAllWindows()));
 		exitAct->setShortcut(QKeySequence::Quit);
 		exitAct->setStatusTip(tr("Close all windows and exit GraphShop"));
-
-
-	graphMenu = new GraphMenu(this);
-	menubar->addMenu(graphMenu);
-
 
 
 	viewMenu = menubar->addMenu("&View");
@@ -60,7 +55,7 @@ GraphShopWindow::GraphShopWindow()
 	setDockNestingEnabled(true);
 
 
-	connect(graphMenu, SIGNAL(graphSelected(Graph*)), this, SLOT(switchToGraph(Graph*)));
+	//|/connect(graphMenu, SIGNAL(graphSelected(Graph*)), this, SLOT(switchToGraph(Graph*)));
 	connect(gsApp, SIGNAL(graphAdded(Graph*)), SLOT(addGraph(Graph*)));
 
 	foreach(Graph* graph, gsApp->graphList())
@@ -69,18 +64,8 @@ GraphShopWindow::GraphShopWindow()
 	}
 
 
-
-	/*addAdjMatrixWindow(_graph);
-
-	scriptPanel = new ScriptWindow(_graph, this);
-	codePanel = new CodeWindow(_graph, this);
-
-	addDockWidget(Qt::BottomDockWidgetArea, scriptWindow);
-	addDockWidget(Qt::BottomDockWidgetArea, codeWindow);
-	tabifyDockWidget(scriptWindow, codeWindow);
-	scriptWindow->raise();*/
-
-	//scriptEngine->globalObject().setProperty("window", scriptEngine->newQObject(this));
+	showCodePanel(true);
+	showScriptPanel(true);
 }
 
 
@@ -133,14 +118,14 @@ void GraphShopWindow::addGraph(Graph *graph)
 
 	QMenu* panelMenu = pack->panelMenu();
 	viewMenu->insertMenu(viewSeparator, panelMenu);
-	panelMenu->menuAction()->setVisible(false);
+	panelMenu->menuAction()->setVisible(true);
 
-	graphMenu->addGraph(graph);
+	//graphMenu->addGraph(graph);
 }
 
 void GraphShopWindow::setGraph(Graph *graph)
 {
-	graphMenu->setGraph(graph);
+	//graphMenu->setGraph(graph);
 }
 
 void GraphShopWindow::switchToGraph(Graph *newgraph)
@@ -150,14 +135,14 @@ void GraphShopWindow::switchToGraph(Graph *newgraph)
 
 	if(oldpack)
 	{
-		oldpack->panelMenu()->menuAction()->setVisible(false);
+		//|/oldpack->panelMenu()->menuAction()->setVisible(false);
 		oldpack->swapOut();
 	}
 
 	_graph = newgraph;
 	setWindowTitle("GraphShop - "+_graph->label());
 
-	newpack->panelMenu()->menuAction()->setVisible(true);
+	//|/newpack->panelMenu()->menuAction()->setVisible(true);
 	newpack->swapIn();
 
 	emit graphSet(_graph);

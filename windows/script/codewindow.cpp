@@ -41,7 +41,6 @@ CodeWindow::CodeWindow(Graph *graph, GraphShopWindow *parent): QDockWidget(paren
 	connect(buttonRun, SIGNAL(clicked()), this, SLOT(runScript()));
 //	connect(scriptEngine, SIGNAL(signalHandlerException(QScriptValue)), this, SLOT(scriptException(QScriptValue)));
 
-	// TODO: Enable doskey-style Up button support for getting previous commands back
 	// TODO: Enable more advanced code-completion support (somehow)
 }
 

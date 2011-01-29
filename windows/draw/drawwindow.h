@@ -14,6 +14,7 @@ public:
 protected:
 	void _build();
 	//void keyPressEvent(QKeyEvent *);
+	void resizeEvent(QResizeEvent *);
 
 private:
 	Graph* _graph;
@@ -23,6 +24,7 @@ private slots:
 	void zoomIn();
 	void zoomOut();
 	void zoomAll();
+	void zoomStd();
 	void rotateCW();
 	void rotateCCW();
 

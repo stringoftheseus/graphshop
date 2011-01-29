@@ -11,6 +11,8 @@
 
 DrawWindow::DrawWindow(Graph *graph, GraphShopWindow *parent): GraphWindow(parent), _graph(graph)
 {
+	draw = 0;
+
 	updateTitle();
 }
 
@@ -91,6 +93,9 @@ void DrawWindow::_build()
 	QAction* zoomOut = new QAction("-", _toolbar);
 	_toolbar->addAction(zoomOut);
 
+	QAction* zoomStd = new QAction("0", _toolbar);
+	_toolbar->addAction(zoomStd);
+
 	QAction* zoomAll = new QAction("A", _toolbar);
 	_toolbar->addAction(zoomAll);
 
@@ -105,6 +110,7 @@ void DrawWindow::_build()
 
 	connect(zoomIn,        SIGNAL(triggered()), SLOT(zoomIn()));
 	connect(zoomOut,       SIGNAL(triggered()), SLOT(zoomOut()));
+	connect(zoomStd,       SIGNAL(triggered()), SLOT(zoomStd()));
 	connect(zoomAll,       SIGNAL(triggered()), SLOT(zoomAll()));
 	connect(rotateCW,      SIGNAL(triggered()), SLOT(rotateCW()));
 	connect(rotateCCW,     SIGNAL(triggered()), SLOT(rotateCCW()));
@@ -116,6 +122,17 @@ void DrawWindow::_build()
 	widget()->layout()->addWidget(draw);
 
 	connect(_graph, SIGNAL(labelChanged(QString)), SLOT(updateTitle()));
+}
+
+
+void DrawWindow::resizeEvent(QResizeEvent *event)
+{
+	QWidget::resizeEvent(event);
+
+	if(draw)
+	{
+		draw->updateRect();
+	}
 }
 
 /*
@@ -137,6 +154,11 @@ void DrawWindow::zoomIn()
 void DrawWindow::zoomOut()
 {
 	draw->scale(1/1.2, 1/1.2);
+}
+
+void DrawWindow::zoomStd()
+{
+	draw->resetView();
 }
 
 void DrawWindow::zoomAll()

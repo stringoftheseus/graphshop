@@ -36,8 +36,6 @@ private:
 	CodeWindow* _codePanel;
 
 	QAction* viewSeparator;
-
-	GraphMenu* graphMenu;
 	QMenu* viewMenu;
 
 private slots:

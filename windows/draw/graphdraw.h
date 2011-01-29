@@ -39,6 +39,9 @@ public slots:
 	void clearAll();
 
 	void viewAll();
+	void resetView();
+	void updateRect();
+
 	void doLayout(DrawLayout*, int minVertices = 1);
 
 protected:

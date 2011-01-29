@@ -17,7 +17,6 @@ ScriptWindow::ScriptWindow(Graph *graph, GraphShopWindow *parent): QDockWidget(p
 	scriptEditor  = new QLineEdit();
 
 
-
 	QVBoxLayout* layout = new QVBoxLayout();
 	layout->setMargin(0);
 
@@ -34,6 +33,7 @@ ScriptWindow::ScriptWindow(Graph *graph, GraphShopWindow *parent): QDockWidget(p
 
 	connect(scriptEditor, SIGNAL(returnPressed()), this, SLOT(runScript()));
 //	connect(scriptEngine, SIGNAL(signalHandlerException(QScriptValue)), this, SLOT(scriptException(QScriptValue)));
+
 }
 
 void ScriptWindow::runScript()
