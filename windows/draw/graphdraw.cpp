@@ -11,8 +11,6 @@
 
 GraphDraw::GraphDraw(Graph *graph): graph(graph)
 {
-	//setMinimumSize(200, 200);
-
 	scene = new QGraphicsScene(this);
 	scene->setItemIndexMethod(QGraphicsScene::NoIndex);
 	scene->setBackgroundBrush(palette().background());
@@ -476,7 +474,6 @@ void GraphDraw::updateRect()
 	QRect visibleRect = visibleRegion().boundingRect();
 	visibleRect.adjust(0, 0, -20, -20);
 
-
 	if(horizontalScrollBar()->isVisible())
 	{
 		visibleRect.adjust(0, 0, 0, -1*horizontalScrollBar()->height()-2);
@@ -500,4 +497,3 @@ void GraphDraw::doLayout(DrawLayout* newLayout, int minVertices)
 
 	drawLayout->layoutAuto(this, tables.V.values(), minVertices);
 }
-
