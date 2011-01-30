@@ -53,6 +53,8 @@ protected slots:
 
 	virtual void _edgeAdded(Edge*);
 	virtual void _edgeDeleted(int);
+	virtual void _arcAdded(Arc*);
+	virtual void _arcDeleted(int);
 
 	virtual void _vertexAdded(Vertex*);
 	virtual void _vertexDeleting(Vertex*);

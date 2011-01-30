@@ -87,7 +87,7 @@ void VertexDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 		foreground = Qt::white;
 		background = Qt::black;
 	}
-	else
+/*	else
 	{
 
 		foreach(Vertex* v, vertex->outNeighborhood())
@@ -106,7 +106,7 @@ void VertexDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 			}
 		}
 	}
-
+*/
 
 	painter->setBrush(QBrush(background));
 	painter->setPen(QPen(QBrush(Qt::black), 1));

@@ -464,7 +464,13 @@ void GraphDraw::flipSelectedArcs()
 
 void GraphDraw::viewAll()
 {
+	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
 	fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+
+	setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 }
 
 void GraphDraw::resetView()

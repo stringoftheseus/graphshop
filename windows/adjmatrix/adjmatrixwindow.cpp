@@ -19,82 +19,35 @@ void AdjMatrixWindow::_build()
 
 
 	table = new QTableWidget(this);
+	table->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
 
 	foreach(Vertex* vertex, _graph->getVertexSet())
 	{
-		addVertex(vertex);
-	}
-
-	foreach(Arc* arc, _graph->getArcSet())
-	{
-		addArc(arc);
+		vertexAdded(vertex);
 	}
 
 	foreach(Edge* edge, _graph->getEdgeSet())
 	{
-		addEdge(edge);
+		edgeAdded(edge);
 	}
 
 	widget()->layout()->addWidget(table);
 
 
-	connect(_graph, SIGNAL(arcAdded(Arc*)),   this, SLOT(addArc(Arc*)));
-	connect(_graph, SIGNAL(arcFlipped(Arc*)), this, SLOT(flipArc(Arc*)));
-	connect(_graph, SIGNAL(arcDeleting(Arc*)), this, SLOT(deleteArc(Arc*)));
+	connect(_graph, SIGNAL(edgeAdded(Edge*)),   this, SLOT(edgeAdded(Edge*)));
+	connect(_graph, SIGNAL(edgeDeleted(Vertex*,Vertex*)), this, SLOT(edgeDeleted(Vertex*,Vertex*)));
 
-	connect(_graph, SIGNAL(edgeAdded(Edge*)),   this, SLOT(addEdge(Edge*)));
-	connect(_graph, SIGNAL(edgeDeleting(Edge*)), this, SLOT(deleteEdge(Edge*)));
-
-	connect(_graph, SIGNAL(vertexAdded(Vertex*)),   this, SLOT(addVertex(Vertex*)));
-	connect(_graph, SIGNAL(vertexDeleting(Vertex*)), this, SLOT(deleteVertex(Vertex*)));
+	connect(_graph, SIGNAL(vertexAdded(Vertex*)),   this, SLOT(vertexAdded(Vertex*)));
+	connect(_graph, SIGNAL(vertexDeleted(int)), this, SLOT(vertexDeleted(int)));
 
 	connect(_graph, SIGNAL(graphCleared()), this, SLOT(clearAll()));
 	connect(_graph, SIGNAL(labelChanged(QString)), SLOT(updateTitle()));
+
+	connect(table, SIGNAL(cellChanged(int,int)), SLOT(cellEdited(int,int)));
 }
 
 
-void AdjMatrixWindow::addArc(Arc *arc)
-{
-	int row = arc->tail()->index();
-	int col = arc->head()->index();
-
-	int count1 = _graph->getArcs(arc->tail(), arc->head()).count();
-	int count2 = _graph->getArcs(arc->head(), arc->tail()).count();
-
-	table->item(row, col)->setText(QString::number(count1));
-	table->item(col, row)->setText(QString::number(count2));
-}
-
-void AdjMatrixWindow::flipArc(Arc *arc)
-{
-	addArc(arc);
-}
-
-void AdjMatrixWindow::deleteArc(Arc *arc)
-{
-	int row = arc->tail()->index();
-	int col = arc->head()->index();
-
-	int count1 = _graph->getArcs(arc->tail(), arc->head()).count()-1;
-	int count2 = _graph->getArcs(arc->head(), arc->tail()).count()-1;
-
-	table->item(row, col)->setText(QString::number(count1));
-	table->item(col, row)->setText(QString::number(count2));
-}
-
-
-void AdjMatrixWindow::addEdge(Edge *edge)
-{
-	int row = edge->vertex1()->index();
-	int col = edge->vertex2()->index();
-
-	int count = _graph->getEdges(edge->vertex1(), edge->vertex2()).count();
-
-	table->item(row, col)->setText(QString::number(count));
-	table->item(col, row)->setText(QString::number(count));
-}
-
-void AdjMatrixWindow::addVertex(Vertex *vertex)
+void AdjMatrixWindow::vertexAdded(Vertex *vertex)
 {
 	int index = vertex->index();
 	table->insertRow(index);
@@ -106,7 +59,7 @@ void AdjMatrixWindow::addVertex(Vertex *vertex)
 	for(int r=0; r<table->rowCount(); r++)
 	{
 		QTableWidgetItem *item = new QTableWidgetItem("0");
-		item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+		item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
 
 		table->setItem(r, index, item);
 		table->setItem(index, r, item->clone());
@@ -115,27 +68,33 @@ void AdjMatrixWindow::addVertex(Vertex *vertex)
 	setHeaderLabels();
 }
 
-
-
-void AdjMatrixWindow::deleteEdge(Edge *edge)
+void AdjMatrixWindow::vertexDeleted(int index)
 {
-	int row = edge->vertex1()->index();
-	int col = edge->vertex2()->index();
-
-	int count = _graph->getEdges(edge->vertex1(), edge->vertex2()).count()-1;
-
-	table->item(row, col)->setText(QString::number(count));
-	table->item(col, row)->setText(QString::number(count));
-}
-
-void AdjMatrixWindow::deleteVertex(Vertex *vertex)
-{
-	int index = vertex->index();
-
 	table->removeRow(index);
 	table->removeColumn(index);
 
 	setHeaderLabels();
+}
+
+void AdjMatrixWindow::edgeAdded(Edge *edge)
+{
+	updateCell(edge->vertex1()->index(), edge->vertex2()->index());
+}
+
+void AdjMatrixWindow::edgeDeleted(Vertex *v1, Vertex *v2)
+{
+	updateCell(v1->index(), v2->index());
+}
+
+void AdjMatrixWindow::cellEdited(int row, int col)
+{
+	_graph->setEdgeMultiplicity(row, col, table->item(row, col)->text().toInt());
+}
+
+void AdjMatrixWindow::updateCell(int row, int col)
+{
+	table->item(row, col)->setText(QString::number(_graph->edgeMultiplicity(row, col)));
+	table->item(col, row)->setText(QString::number(_graph->edgeMultiplicity(row, col)));
 }
 
 void AdjMatrixWindow::clearAll()

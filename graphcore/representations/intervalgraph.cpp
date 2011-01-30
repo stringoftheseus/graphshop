@@ -180,6 +180,16 @@ void IntervalGraph::_edgeDeleted(int)
 	validate();
 }
 
+void IntervalGraph::_arcAdded(Arc*)
+{
+	validate();
+}
+
+void IntervalGraph::_arcDeleted(int)
+{
+	validate();
+}
+
 void IntervalGraph::_vertexAdded(Vertex* vertex)
 {
 	if(!_working)

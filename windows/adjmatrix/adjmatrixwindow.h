@@ -23,15 +23,14 @@ protected:
 	QTableWidget* table;
 
 private slots:
-	void addArc(Arc*);
-	void flipArc(Arc*);
-	void deleteArc(Arc*);
+	void edgeAdded(Edge*);
+	void edgeDeleted(Vertex*, Vertex*);
 
-	void addEdge(Edge*);
-	void deleteEdge(Edge*);
+	void vertexAdded(Vertex*);
+	void vertexDeleted(int);
 
-	void addVertex(Vertex*);
-	void deleteVertex(Vertex*);
+	void cellEdited(int, int);
+	void updateCell(int, int);
 
 	void clearAll();
 	void updateTitle();
