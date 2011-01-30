@@ -38,7 +38,6 @@ GraphDraw::GraphDraw(Graph *graph): graph(graph)
 	centerOn(scene->itemsBoundingRect().center());
 
 	connect(scene, SIGNAL(changed(QList<QRectF>)), this, SLOT(updateRect()));
-	updateRect();
 }
 
 GraphDraw::~GraphDraw()
@@ -316,6 +315,10 @@ void GraphDraw::dragMoveEvent(QDragMoveEvent *event)
 	QGraphicsView::dragMoveEvent(event);
 }
 
+void GraphDraw::showEvent(QShowEvent *event)
+{
+		updateRect();
+}
 
 
 /* TODO: rename thse to addArcDraw or arcAdded to better reflect their actual purpose */
@@ -472,17 +475,10 @@ void GraphDraw::resetView()
 void GraphDraw::updateRect()
 {
 	QRect visibleRect = visibleRegion().boundingRect();
-	visibleRect.adjust(0, 0, -20, -20);
+	//visibleRect.adjust(0, 0, -20, -20);
 
-	if(horizontalScrollBar()->isVisible())
-	{
-		visibleRect.adjust(0, 0, 0, -1*horizontalScrollBar()->height()-2);
-	}
-
-	if(verticalScrollBar()->isVisible())
-	{
-		visibleRect.adjust(0, 0, -1*verticalScrollBar()->height()-2, 0);
-	}
+	visibleRect.adjust(0, 0, 0, -1*horizontalScrollBar()->height()-2);
+	visibleRect.adjust(0, 0, -1*verticalScrollBar()->height()-2, 0);
 
 	scene->setSceneRect(scene->itemsBoundingRect().united(visibleRect));
 }
