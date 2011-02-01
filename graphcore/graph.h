@@ -56,6 +56,11 @@ public:
 	Q_INVOKABLE void removeArc(Arc*);
 	Q_INVOKABLE void removeArcs();
 
+	Q_INVOKABLE int arcMultiplicity(int tail, int head);
+	Q_INVOKABLE int arcMultiplicity(Vertex* tail, Vertex* head);
+	Q_INVOKABLE void setArcMultiplicity(int tail, int head, int count);
+	Q_INVOKABLE void setArcMultiplicity(Vertex* tail, Vertex* head, int count);
+
 	Q_INVOKABLE Arc* getArc(int index) const;
 	Q_INVOKABLE void flipArc(Arc* arc);
 	Q_INVOKABLE bool hasArc(int trail, int head) const;

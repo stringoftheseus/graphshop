@@ -14,7 +14,7 @@ GraphShopApp::GraphShopApp(int& argc, char** argv) : QApplication(argc, argv)
 
 	_setupScripting();
 
-/*
+
 	Graph* graph = addNewGraph("Graph 1");
 	graph->addArc(0, 1);
 	graph->addArc(0, 2);
@@ -25,7 +25,7 @@ GraphShopApp::GraphShopApp(int& argc, char** argv) : QApplication(argc, argv)
 	//graph->addEdge(4, 5);
 	//graph->addEdge(6  4);
 	//graph->addEdge(4, 8);
-
+/*
 	graph = addNewGraph("Graph 2");
 	graph->addEdge(0, 1);
 	graph->addEdge(1, 2);

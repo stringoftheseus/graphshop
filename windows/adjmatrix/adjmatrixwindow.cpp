@@ -1,3 +1,4 @@
+#include <QComboBox>
 #include <QTableWidget>
 #include <QTableWidgetItem>
 
@@ -18,12 +19,31 @@ void AdjMatrixWindow::_build()
 	_graph->build();
 
 
-	table = new QTableWidget(this);
-	table->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
+	typeBox = new QComboBox();
+
+	typeBox->addItem("Edges", EDGES);
+	typeBox->addItem("Arcs", ARCS);
+
+	_toolbar->addWidget(typeBox);
+
+	connect(typeBox, SIGNAL(currentIndexChanged(int)), SLOT(changeType()));
+
+
+	arcTable = new QTableWidget(this);
+	arcTable->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
+
+	edgeTable = new QTableWidget(this);
+	edgeTable->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
+
 
 	foreach(Vertex* vertex, _graph->getVertexSet())
 	{
 		vertexAdded(vertex);
+	}
+
+	foreach(Arc* arc, _graph->getArcSet())
+	{
+		arcAdded(arc);
 	}
 
 	foreach(Edge* edge, _graph->getEdgeSet())
@@ -31,8 +51,13 @@ void AdjMatrixWindow::_build()
 		edgeAdded(edge);
 	}
 
-	widget()->layout()->addWidget(table);
+	widget()->layout()->addWidget(arcTable);
+	widget()->layout()->addWidget(edgeTable);
 
+
+	connect(_graph, SIGNAL(arcAdded(Arc*)),   this, SLOT(arcAdded(Arc*)));
+	connect(_graph, SIGNAL(arcFlipped(Arc*)),   this, SLOT(arcFlipped(Arc*)));
+	connect(_graph, SIGNAL(arcDeleted(Vertex*,Vertex*)), this, SLOT(arcDeleted(Vertex*,Vertex*)));
 
 	connect(_graph, SIGNAL(edgeAdded(Edge*)),   this, SLOT(edgeAdded(Edge*)));
 	connect(_graph, SIGNAL(edgeDeleted(Vertex*,Vertex*)), this, SLOT(edgeDeleted(Vertex*,Vertex*)));
@@ -43,26 +68,54 @@ void AdjMatrixWindow::_build()
 	connect(_graph, SIGNAL(graphCleared()), this, SLOT(clearAll()));
 	connect(_graph, SIGNAL(labelChanged(QString)), SLOT(updateTitle()));
 
-	connect(table, SIGNAL(cellChanged(int,int)), SLOT(cellEdited(int,int)));
+	connect(arcTable, SIGNAL(cellChanged(int,int)), SLOT(arcCellEdited(int,int)));
+	connect(edgeTable, SIGNAL(cellChanged(int,int)), SLOT(edgeCellEdited(int,int)));
+
+	changeType();
+}
+
+void AdjMatrixWindow::changeType()
+{
+	if(typeBox->itemData(typeBox->currentIndex()) == EDGES)
+	{
+		arcTable->setVisible(false);
+		edgeTable->setVisible(true);
+	}
+	else
+	{
+		arcTable->setVisible(true);
+		edgeTable->setVisible(false);
+	}
 }
 
 
 void AdjMatrixWindow::vertexAdded(Vertex *vertex)
 {
 	int index = vertex->index();
-	table->insertRow(index);
-	table->insertColumn(index);
 
-	table->setRowHeight(index, 20);
-	table->setColumnWidth(index, 20);
+	arcTable->insertRow(index);
+	arcTable->insertColumn(index);
 
-	for(int r=0; r<table->rowCount(); r++)
+	arcTable->setRowHeight(index, 20);
+	arcTable->setColumnWidth(index, 20);
+
+	edgeTable->insertRow(index);
+	edgeTable->insertColumn(index);
+
+	edgeTable->setRowHeight(index, 20);
+	edgeTable->setColumnWidth(index, 20);
+
+
+	QTableWidgetItem *item = new QTableWidgetItem("0");
+	item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+
+	for(int r=0; r<arcTable->rowCount(); r++)
 	{
-		QTableWidgetItem *item = new QTableWidgetItem("0");
-		item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+		arcTable->setItem(r, index, item->clone());
+		arcTable->setItem(index, r, item->clone());
 
-		table->setItem(r, index, item);
-		table->setItem(index, r, item->clone());
+		edgeTable->setItem(r, index, item->clone());
+		edgeTable->setItem(index, r, item->clone());
 	}
 
 	setHeaderLabels();
@@ -70,36 +123,68 @@ void AdjMatrixWindow::vertexAdded(Vertex *vertex)
 
 void AdjMatrixWindow::vertexDeleted(int index)
 {
-	table->removeRow(index);
-	table->removeColumn(index);
+	arcTable->removeRow(index);
+	arcTable->removeColumn(index);
+
+	edgeTable->removeRow(index);
+	edgeTable->removeColumn(index);
 
 	setHeaderLabels();
 }
 
+
+void AdjMatrixWindow::arcAdded(Arc *arc)
+{
+	updateArcCell(arc->tail()->index(), arc->head()->index());
+}
+
+void AdjMatrixWindow::arcDeleted(Vertex *t, Vertex *h)
+{
+	updateArcCell(t->index(), h->index());
+}
+
+void AdjMatrixWindow::arcFlipped(Arc *arc)
+{
+	updateArcCell(arc->head()->index(), arc->tail()->index());
+	updateArcCell(arc->tail()->index(), arc->head()->index());
+}
+
+
 void AdjMatrixWindow::edgeAdded(Edge *edge)
 {
-	updateCell(edge->vertex1()->index(), edge->vertex2()->index());
+	updateEdgeCell(edge->vertex1()->index(), edge->vertex2()->index());
 }
 
 void AdjMatrixWindow::edgeDeleted(Vertex *v1, Vertex *v2)
 {
-	updateCell(v1->index(), v2->index());
+	updateEdgeCell(v1->index(), v2->index());
 }
 
-void AdjMatrixWindow::cellEdited(int row, int col)
+void AdjMatrixWindow::arcCellEdited(int row, int col)
 {
-	_graph->setEdgeMultiplicity(row, col, table->item(row, col)->text().toInt());
+	_graph->setArcMultiplicity(row, col, arcTable->item(row, col)->text().toInt());
 }
 
-void AdjMatrixWindow::updateCell(int row, int col)
+void AdjMatrixWindow::updateArcCell(int row, int col)
 {
-	table->item(row, col)->setText(QString::number(_graph->edgeMultiplicity(row, col)));
-	table->item(col, row)->setText(QString::number(_graph->edgeMultiplicity(row, col)));
+	arcTable->item(row, col)->setText(QString::number(_graph->arcMultiplicity(row, col)));
+}
+
+void AdjMatrixWindow::edgeCellEdited(int row, int col)
+{
+	_graph->setEdgeMultiplicity(row, col, edgeTable->item(row, col)->text().toInt());
+}
+
+void AdjMatrixWindow::updateEdgeCell(int row, int col)
+{
+	edgeTable->item(row, col)->setText(QString::number(_graph->edgeMultiplicity(row, col)));
+	edgeTable->item(col, row)->setText(QString::number(_graph->edgeMultiplicity(row, col)));
 }
 
 void AdjMatrixWindow::clearAll()
 {
-	table->clear();
+	arcTable->clear();
+	edgeTable->clear();
 }
 
 void AdjMatrixWindow::updateTitle()
@@ -110,11 +195,14 @@ void AdjMatrixWindow::updateTitle()
 void AdjMatrixWindow::setHeaderLabels()
 {
 	QStringList labels;
-	for(int i=0; i<table->rowCount(); i++)
+	for(int i=0; i<arcTable->rowCount(); i++)
 	{
 		labels.append(QString::number(i));
 	}
 
-	table->setVerticalHeaderLabels(labels);
-	table->setHorizontalHeaderLabels(labels);
+	arcTable->setVerticalHeaderLabels(labels);
+	arcTable->setHorizontalHeaderLabels(labels);
+
+	edgeTable->setVerticalHeaderLabels(labels);
+	edgeTable->setHorizontalHeaderLabels(labels);
 }

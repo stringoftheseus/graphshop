@@ -317,6 +317,45 @@ void Graph::removeArcs()
 	}
 }
 
+
+int Graph::arcMultiplicity(int tail, int head)
+{
+	return arcMultiplicity(getVertex(tail), getVertex(head));
+}
+
+int Graph::arcMultiplicity(Vertex* tail, Vertex* head)
+{
+	return getArcs(tail, head).size();
+}
+
+void Graph::setArcMultiplicity(int tail, int head, int count)
+{
+	return setArcMultiplicity(getVertex(tail), getVertex(head), count);
+}
+
+void Graph::setArcMultiplicity(Vertex* tail, Vertex* head, int count)
+{
+	int mult = arcMultiplicity(tail, head);
+
+	if(mult < count)
+	{
+		for(int i=mult; i<count; i++)
+		{
+			addArc(tail, head);
+		}
+	}
+	else if(mult > count)
+	{
+		QList<Arc*> arcs = getArcs(tail, head);
+
+		for(int i=count; i<mult; i++)
+		{
+			removeArc(arcs.takeLast());
+		}
+	}
+}
+
+
 Arc* Graph::getArc(int index) const
 {
 	return A[index];
