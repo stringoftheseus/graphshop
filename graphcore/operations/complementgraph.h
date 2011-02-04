@@ -16,6 +16,7 @@ public:
 protected:
 	virtual void _build();
 	virtual void updateEdgeCandidate(int vertex1, int vertex2);
+	virtual void updateEdgeCandidate(Vertex* vertex1, Vertex* vertex2);
 
 protected slots:
 	virtual void edgeAdded(Edge*);

@@ -206,6 +206,9 @@ void IntervalGraph::_vertexDeleting(Vertex* vertex)
 
 	foreach(Interval* intersect, intersections(interval))
 	{
+		_intersections.remove(interval, intersect);
+		_intersections.remove(intersect, interval);
+
 		emit intersectionLost(interval, intersect);
 	}
 

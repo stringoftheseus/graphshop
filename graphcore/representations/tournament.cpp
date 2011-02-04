@@ -131,12 +131,12 @@ void Tournament::_vertexAdded(Vertex* vertex)
 
 void Tournament::_vertexDeleting(Vertex* vertex)
 {
-	ignoreSignals(true);
+	//ignoreSignals(true);
 }
 
 void Tournament::_vertexDeleted(int index)
 {
-	ignoreSignals(false);
+	//ignoreSignals(false);
 
 	emit vertexDeleted(index);
 	validate();	

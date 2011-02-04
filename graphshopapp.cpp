@@ -25,18 +25,18 @@ GraphShopApp::GraphShopApp(int& argc, char** argv) : QApplication(argc, argv)
 	//graph->addEdge(4, 5);
 	//graph->addEdge(6  4);
 	//graph->addEdge(4, 8);
-/*
+
 	graph = addNewGraph("Graph 2");
 	graph->addEdge(0, 1);
 	graph->addEdge(1, 2);
 	graph->addEdge(2, 3);
 	graph->addEdge(1, 3);
+	graph->addVertex();
 
 	graph = addNewGraph("Graph 3");
 	graph->addVertex();
 
 	graph = addNewGraph("Graph 4");
-*/
 }
 
 void GraphShopApp::_setupScripting()

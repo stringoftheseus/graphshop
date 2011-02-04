@@ -45,12 +45,14 @@ private:
 	QGraphicsScene* _scene;
 	QGraphicsItem* _invalidNotice;
 
+	Interval* _intervalDeleting;
 	QHash<Interval*, IntervalDraw*> _intervals;
 
 private slots:
 	void deleteSelection();
 
 	void intervalAdded(Interval*);
+	void intervalDeleting(Interval*);
 	void intervalDeleted(int);
 
 	void intersectionMade(Interval*, Interval*);

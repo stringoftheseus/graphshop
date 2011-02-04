@@ -55,6 +55,7 @@ IntervalGraphDraw::IntervalGraphDraw(IntervalGraph *source): _source(source)
 	}
 
 	connect(_source, SIGNAL(intervalAdded(Interval*)), SLOT(intervalAdded(Interval*)));
+	connect(_source, SIGNAL(intervalDeleting(Interval*)), SLOT(intervalDeleting(Interval*)));
 	connect(_source, SIGNAL(intervalDeleted(int)),     SLOT(intervalDeleted(int)));
 
 	connect(_source, SIGNAL(intersectionMade(Interval*, Interval*)), SLOT(intersectionMade(Interval*, Interval*)));
@@ -257,17 +258,15 @@ void IntervalGraphDraw::intervalAdded(Interval* interval)
 	connect(id, SIGNAL(levelChanged(IntervalDraw*)), SLOT(intervalDrawLevelChanged(IntervalDraw*)));
 }
 
+void IntervalGraphDraw::intervalDeleting(Interval* interval)
+{
+	_intervalDeleting = interval;
+}
+
 void IntervalGraphDraw::intervalDeleted(int index)
 {
-	foreach(IntervalDraw* draw, _intervals)
-	{
-		if(draw->source()->index() == index)
-		{
-			_scene->removeItem(draw);
-			_intervals.remove(draw->source());
-			break;
-		}
-	}
+	_scene->removeItem(_intervals.value(_intervalDeleting));
+	_intervals.remove(_intervalDeleting);
 
 	// All the intersections should already have been taken care of by intersectionLost
 }

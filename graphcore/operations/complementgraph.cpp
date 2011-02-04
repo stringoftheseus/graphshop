@@ -38,6 +38,11 @@ void ComplementGraph::updateEdgeCandidate(int vertex1, int vertex2)
 	setEdgeMultiplicity(vertex1, vertex2, _source->hasEdge(vertex1, vertex2) ? 0 : 1);
 }
 
+void ComplementGraph::updateEdgeCandidate(Vertex* vertex1, Vertex* vertex2)
+{
+	setEdgeMultiplicity(vertex1, vertex2, _source->hasEdge(vertex1, vertex2) ? 0 : 1);
+}
+
 
 void ComplementGraph::edgeAdded(Edge* edge)
 {
@@ -52,6 +57,8 @@ void ComplementGraph::edgeDeleted(Vertex* v1, Vertex* v2)
 void ComplementGraph::vertexAdded(Vertex* vertex)
 {
 	addVertex(vertex->label());
+
+
 }
 
 void ComplementGraph::vertexDeleted(int index)
