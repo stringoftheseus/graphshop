@@ -38,6 +38,8 @@ private:
 	QAction* viewSeparator;
 	QMenu* viewMenu;
 
+	bool _wasMaximized;
+
 private slots:
 	void switchToGraph(Graph*);
 

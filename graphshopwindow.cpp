@@ -153,10 +153,18 @@ void GraphShopWindow::setFullScreen(bool fullscreen)
 {
 	if(fullscreen)
 	{
+		_wasMaximized = isMaximized();
 		showFullScreen();
 	}
 	else
 	{
-		showNormal();
+		if(_wasMaximized)
+		{
+			showMaximized();
+		}
+		else
+		{
+			showNormal();
+		}
 	}
 }
