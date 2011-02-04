@@ -54,11 +54,17 @@ void ComplementGraph::edgeDeleted(Vertex* v1, Vertex* v2)
 	updateEdgeCandidate(v1->index(), v2->index());
 }
 
-void ComplementGraph::vertexAdded(Vertex* vertex)
+void ComplementGraph::vertexAdded(Vertex* orig)
 {
-	addVertex(vertex->label());
+	Vertex* vertex = addVertex(orig->label());
 
-
+	foreach(Vertex* other, getVertexSet())
+	{
+		if(vertex != other)
+		{
+			updateEdgeCandidate(vertex, other);
+		}
+	}
 }
 
 void ComplementGraph::vertexDeleted(int index)
