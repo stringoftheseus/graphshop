@@ -269,6 +269,12 @@ void IntervalGraphDraw::intervalDeleted(int index)
 	_intervals.remove(_intervalDeleting);
 
 	// All the intersections should already have been taken care of by intersectionLost
+
+	// Force redraw of everything to update printed interval indices
+	foreach(IntervalDraw* id, _intervals)
+	{
+		id->update();
+	}
 }
 
 

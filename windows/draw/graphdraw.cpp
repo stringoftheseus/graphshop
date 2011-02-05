@@ -391,7 +391,11 @@ void GraphDraw::deleteVertex(Vertex* vertex)
 	scene->removeItem(vd);
 	tables.V.remove(vertex);
 
-	// TODO: Figure our some way to force redraw of all the vertex draws (to get the new numeric labels)
+	// Force redraw of everything to update printed vertex indices
+	foreach(VertexDraw* vd, tables.V)
+	{
+		vd->update();
+	}
 }
 
 void GraphDraw::clearAll()
