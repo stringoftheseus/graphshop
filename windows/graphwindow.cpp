@@ -57,3 +57,4 @@ void GraphWindow::handleVisibilityChange(bool visible)
 		build();
 	}
 }
+

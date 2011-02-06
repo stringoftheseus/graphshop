@@ -18,8 +18,9 @@ VertexDraw::VertexDraw(DrawTables *drawtables, Vertex *vertex): tables(drawtable
 	setFlag(ItemIsMovable);
 	setFlag(ItemIsFocusable);
 	setFlag(ItemIsSelectable);
+
 	//setFlag(ItemSendsGeometryChanges);
-	setCacheMode(DeviceCoordinateCache);
+	//setCacheMode(DeviceCoordinateCache);
 }
 
 int VertexDraw::radius()
@@ -110,6 +111,7 @@ void VertexDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
 	painter->setBrush(QBrush(background));
 	painter->setPen(QPen(QBrush(Qt::black), 1));
+
 	painter->drawEllipse(QPoint(), r, r);
 
 	painter->setPen(QPen(QBrush(foreground), 1));

@@ -4,11 +4,12 @@
 #include <QGraphicsView>
 #include "graphcore/graph.h"
 
+#include "windows/graphgraphicsview.h"
 #include "drawtables.h"
 
 class DrawLayout;
 
-class GraphDraw : public QGraphicsView
+class GraphDraw : public GraphGraphicsView
 {
 	Q_OBJECT
 

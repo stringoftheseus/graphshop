@@ -5,13 +5,14 @@
 
 //class Interval;
 
+#include "windows/graphgraphicsview.h"
 #include "graphcore/representations/interval.h"
 #include "intervaldraw.h"
 
 class IntervalGraph;
 //class IntervalDraw;
 
-class IntervalGraphDraw : public QGraphicsView
+class IntervalGraphDraw : public GraphGraphicsView
 {
 	Q_OBJECT
 

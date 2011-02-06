@@ -20,6 +20,11 @@ void DrawWindow::_build()
 {
 	_graph->build();
 
+	draw = new GraphDraw(_graph);
+	widget()->layout()->addWidget(draw);
+
+	_toolbar->insertAction(0, draw->exportAction());
+	_toolbar->addSeparator();
 
 	QActionGroup* modeGroup = new QActionGroup(this);
 	connect(modeGroup, SIGNAL(triggered(QAction*)), SLOT(setMode(QAction*)));
@@ -117,9 +122,6 @@ void DrawWindow::_build()
 	connect(layoutRandom,  SIGNAL(triggered()), SLOT(layoutRandom()));
 	connect(layoutCircle,  SIGNAL(triggered()), SLOT(layoutCircle()));
 	connect(layoutGravity, SIGNAL(triggered()), SLOT(layoutGravity()));
-
-	draw = new GraphDraw(_graph);
-	widget()->layout()->addWidget(draw);
 
 	connect(_graph, SIGNAL(labelChanged(QString)), SLOT(updateTitle()));
 }
