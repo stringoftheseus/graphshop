@@ -16,7 +16,7 @@ QAction* GraphGraphicsView::exportAction()
 void GraphGraphicsView::doExport()
 {
 	QStringList filters;
-	filters << "PNG (*.png)" << "JPEG (*.jpg *.jpeg)" << "TIFF (*.tiff)" << "PDF (*.pdf)" << "EPS (*.eps)";
+	filters << "PNG (*.png)" /*<< "JPEG (*.jpg *.jpeg)" << "TIFF (*.tiff)"*/ << "PDF (*.pdf)" /*<< "EPS (*.eps)"*/;
 
 	QFileDialog dialog(this);
 	dialog.setNameFilters(filters);
@@ -28,7 +28,7 @@ void GraphGraphicsView::doExport()
 		QString filter = dialog.selectedNameFilter();
 
 		QRectF rect = scene()->itemsBoundingRect();
-		//rect.adjust(-10, -10, 10, 10);
+		rect.adjust(-10, -10, 10, 10);
 
 		QBrush oldBackground = scene()->backgroundBrush();
 
@@ -64,20 +64,20 @@ void GraphGraphicsView::doExport()
 			painter.begin(&printer);
 			painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
 
-			render(&painter, scene()->itemsBoundingRect(), scene()->itemsBoundingRect().toRect());
+			render(&painter/*, scene()->itemsBoundingRect(), scene()->itemsBoundingRect().toRect()*/);
 			painter.end();
 		}
 		else
 		{
 			if(filter == "PNG (*.png)")
 			{
-				QImage image(size(), QImage::Format_ARGB32_Premultiplied);
+				QImage image(/*rect.*/size()/*.toSize()*/, QImage::Format_ARGB32_Premultiplied);
 
 				QPainter painter;
 				painter.begin(&image);
 				painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
 
-				render(&painter, QRectF(), rect.toRect());
+				render(&painter/*, QRectF(), rect.toRect()*/);
 				painter.end();
 
 				image.save(fileName);
@@ -89,6 +89,7 @@ void GraphGraphicsView::doExport()
 				QPainter painter;
 				painter.begin(&image);
 				painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
+				painter.fillRect(rect, Qt::white);
 
 				render(&painter, QRectF(), rect.toRect());
 				painter.end();
