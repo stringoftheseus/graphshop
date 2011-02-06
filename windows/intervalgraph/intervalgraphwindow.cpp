@@ -29,9 +29,10 @@ void IntervalGraphWindow::_build()
 	_draw = new IntervalGraphDraw(_graph);
 	widget()->layout()->addWidget(_draw);
 
+/*
 	_toolbar->insertAction(0, _draw->exportAction());
 	_toolbar->addSeparator();
-
+*/
 
 	QAction* zoomIn = new QAction("+", _toolbar);
 	_toolbar->addAction(zoomIn);

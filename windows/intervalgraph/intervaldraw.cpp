@@ -25,7 +25,7 @@ IntervalDraw::IntervalDraw(Interval *sourceInterval)
 	setFlag(ItemIsFocusable);
 	setFlag(ItemIsSelectable);
 	//setFlag(ItemSendsGeometryChanges);
-	setCacheMode(DeviceCoordinateCache);
+	//setCacheMode(DeviceCoordinateCache);
 	setAcceptHoverEvents(true);
 }
 
