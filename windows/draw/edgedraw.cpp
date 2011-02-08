@@ -45,8 +45,8 @@ QPainterPath EdgeDraw::shape() const
 	QPainterPath path;
 
 
-	const int r1 = v1->radius();
-	const int r2 = v2->radius();
+	const int r1 = v1->radius()+1;
+	const int r2 = v2->radius()+1;
 
 	const QPointF p1 = mapFromItem(v1, 0, 0);
 	const QPointF p2 = mapFromItem(v2, 0, 0);
@@ -90,8 +90,9 @@ void EdgeDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 {
 	if(!v1->collidesWithItem(v2))
 	{
-		const int r1 = v1->radius();
-		const int r2 = v2->radius();
+		const int r1 = v1->radius()+1;
+		const int r2 = v2->radius()+1;
+		const int ra = 8;
 
 		const QPointF p1 = mapFromItem(v1, 0, 0);
 		const QPointF p2 = mapFromItem(v2, 0, 0);
@@ -103,12 +104,40 @@ void EdgeDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
 		const double dx = x2 - x1;
 		const double dy = y2 - y1;
-		const double dist = sqrt(dx*dx + dy*dy);
 
-		const double sint = dx / dist;
-		const double cost = dy / dist;
+		const double dist   = sqrt(dx*dx + dy*dy);
 
-		painter->setPen(QPen(QBrush(Qt::black), isSelected() ? 2 : 1));
-		painter->drawLine(x1+r1*sint, y1+r2*cost, x2-r2*sint, y2-r2*cost);
+		const double cost = dx / dist;
+		const double sint = dy / dist;
+
+		const int vert = y1 > y2 ? 1 : -1;
+		const double t = acos(cost) * vert;
+
+		for(int i=-2; i<=2; i+=2)
+		{
+			const double bcdist = pow(dist, 0.5)*i;
+			const double a = 0.2*i;
+			const double d = 0.4;
+
+			const QPointF pc((x1+x2)/2,(y1+y2)/2);
+			const QPointF bc1(pc.x()+(y1-y2)/dist*bcdist, pc.y()+(x2-x1)/dist*bcdist);
+
+			//painter->setPen(QPen(QBrush(Qt::black), isSelected() ? 2 : 1));
+			//painter->drawLine(x1+r1*sin(a), y1+r2*cos(a), x2-r2*sin(a), y2-r2*cos(a));
+
+			//painter->setPen(QPen(QBrush(Qt::blue), 1));
+			//painter->drawLine(pc, bc1);
+
+
+			QPainterPath edgebezier;
+			edgebezier.moveTo(             x1+r1*cos(t-a), y1-r2*sin(t-a));
+			edgebezier.quadTo(bc1, QPointF(x2-r2*cos(t+a), y2+r2*sin(t+a)));
+
+			painter->strokePath(edgebezier, QPen(QBrush(Qt::black), isSelected() ? 2 : 1));
+
+			painter->setPen(QPen(QBrush(Qt::black), isSelected() ? 2 : 1));
+			painter->drawLine(x2-r2*cos(t+a), y2+r2*sin(t+a), x2-r2*cos(t+a)-ra*cos(t+a+d), y2+r2*sin(t+a)+ra*sin(t+a+d));
+			painter->drawLine(x2-r2*cos(t+a), y2+r2*sin(t+a), x2-r2*cos(t+a)-ra*cos(t+a-d), y2+r2*sin(t+a)+ra*sin(t+a-d));
+		}
 	}
 }

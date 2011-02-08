@@ -55,8 +55,8 @@ QPainterPath ArcDraw::shape() const
 	QPainterPath path;
 	//path.addRect(QRectF(mapFromItem(tail, 0, 0), mapFromItem(head, 0, 0)).normalized());
 
-	const int r1 = tail->radius();
-	const int r2 = head->radius();
+	const int r1 = tail->radius()+2;
+	const int r2 = head->radius()+2;
 
 	const QPointF p1 = mapFromItem(tail, 0, 0);
 	const QPointF p2 = mapFromItem(head, 0, 0);
@@ -99,8 +99,8 @@ void ArcDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 {
 	if(!tail->collidesWithItem(head))
 	{
-		const int r1 = tail->radius();
-		const int r2 = head->radius();
+		const int r1 = tail->radius()+1;
+		const int r2 = head->radius()+1;
 		const int ra = 10;
 
 		const QPointF p1 = mapFromItem(tail, 0, 0);
