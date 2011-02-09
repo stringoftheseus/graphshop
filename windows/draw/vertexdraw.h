@@ -17,7 +17,7 @@ public:
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 	Vertex* getVertex();
-	int radius();
+	int radius() const;
 
 	//int type() const;
 private:

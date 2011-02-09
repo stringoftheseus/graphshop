@@ -9,20 +9,16 @@
 #include "vertexdraw.h"
 #include "edgedraw.h"
 
-EdgeDraw::EdgeDraw(VertexDraw *v1, VertexDraw *v2): v1(v1), v2(v2), tables(0), edge(0)
+
+EdgeDraw::EdgeDraw(VertexDraw *v1, VertexDraw *v2): LineDraw(v1, v2, false), edge(0)
 {
 
 }
 
-EdgeDraw::EdgeDraw(DrawTables *drawtables, Edge *edge): tables(drawtables), edge(edge)
+EdgeDraw::EdgeDraw(DrawTables *tables, Edge *edge): LineDraw(tables->V.value(edge->vertex1()),
+															 tables->V.value(edge->vertex2()), false),
+													edge(edge)
 {
-	//setZValue(1.0);
-
-	setFlag(ItemIsFocusable);
-	setFlag(ItemIsSelectable);
-
-	v1 = tables->V.value(edge->vertex1());
-	v2 = tables->V.value(edge->vertex2());
 }
 
 Edge* EdgeDraw::getEdge()
@@ -30,150 +26,10 @@ Edge* EdgeDraw::getEdge()
 	return edge;
 }
 
-VertexDraw* EdgeDraw::getV1()
+int EdgeDraw::index() const
 {
-	return v1;
-}
+	// TODO: this is an ugly hack and should be cleaned up, but right now I just need it working
+	EdgeDraw* me = const_cast<EdgeDraw*>(this);
 
-QRectF EdgeDraw::boundingRect() const
-{
-	return QRectF(mapFromItem(v1, 0, 0), mapFromItem(v2, 0, 0)).normalized();
-}
-
-QPainterPath EdgeDraw::shape() const
-{
-	QPainterPath path;
-
-
-	const int r1 = v1->radius()+1;
-	const int r2 = v2->radius()+1;
-
-	const QPointF p1 = mapFromItem(v1, 0, 0);
-	const QPointF p2 = mapFromItem(v2, 0, 0);
-
-	const double x1 = p1.x();
-	const double y1 = p1.y();
-	const double x2 = p2.x();
-	const double y2 = p2.y();
-
-	const double dx = x2 - x1;
-	const double dy = y2 - y1;
-	const double dist = sqrt(dx*dx + dy*dy);
-
-	const double cost = dx / dist;
-	const double sint = dy / dist;
-
-//	const int vert = y1 > y2 ? 1 : -1;
-//	const double t = acos(cost) * vert;
-//	const double a = 0.5;
-
-	double w = 3;
-
-	QPointF e1 = QPointF(x1+r1*cost, y1+r2*sint);
-	QPointF e2 = QPointF(x2-r2*cost, y2-r2*sint);
-
-	QPolygonF zone;
-
-	zone << QPointF(e1.x() + w*sint, e1.y() - w*cost);
-	zone << QPointF(e1.x() - w*sint, e1.y() + w*cost);
-	zone << QPointF(e2.x() - w*sint, e2.y() + w*cost);
-	zone << QPointF(e2.x() + w*sint, e2.y() - w*cost);
-	zone << QPointF(e1.x() + w*sint, e1.y() - w*cost);
-
-	path.addPolygon(zone);
-
-	return path;
-
-}
-
-void EdgeDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
-{
-	if(!v1->collidesWithItem(v2))
-	{
-		painter->setRenderHint(QPainter::Antialiasing);
-
-		const int r1 = v1->radius()+1;
-		const int r2 = v2->radius()+1;
-		const int ra = 8;
-
-		const QPointF p1 = mapFromItem(v1, 0, 0);
-		const QPointF p2 = mapFromItem(v2, 0, 0);
-
-		const double x1 = p1.x();
-		const double y1 = p1.y();
-		const double x2 = p2.x();
-		const double y2 = p2.y();
-
-		const double dx = x2 - x1;
-		const double dy = y2 - y1;
-
-		const double dist   = sqrt(dx*dx + dy*dy);
-
-		const double cost = dx / dist;
-		const double sint = dy / dist;
-
-		const int vert = y1 > y2 ? 1 : -1;
-		const double t = acos(cost) * vert;
-
-		for(int i=-2; i<=2; i++)
-		{
-			const double bcdist = pow(dist, 0.5)*i;
-			const double a = 0.3*i;
-			const double d = 0.4;
-
-			const QPointF pc((x1+x2)/2,(y1+y2)/2);
-			const QPointF bc1(pc.x()+(y1-y2)/dist*bcdist, pc.y()+(x2-x1)/dist*bcdist);
-
-			//painter->setPen(QPen(QBrush(Qt::black), isSelected() ? 2 : 1));
-			//painter->drawLine(x1+r1*sin(a), y1+r2*cos(a), x2-r2*sin(a), y2-r2*cos(a));
-
-			//painter->setPen(QPen(QBrush(Qt::blue), 1));
-			//painter->drawLine(pc, bc1);
-
-
-			QPainterPath edgebezier;
-			edgebezier.moveTo(             x1+r1*cos(t-a), y1-r2*sin(t-a));
-			edgebezier.quadTo(bc1, QPointF(x2-r2*cos(t+a), y2+r2*sin(t+a)));
-
-			painter->strokePath(edgebezier, QPen(QBrush(Qt::black), isSelected() ? 2 : 1));
-
-			painter->setPen(QPen(QBrush(Qt::black), isSelected() ? 2 : 1));
-			painter->drawLine(x2-r2*cos(t+a), y2+r2*sin(t+a), x2-r2*cos(t+a)-ra*cos(t+a+d), y2+r2*sin(t+a)+ra*sin(t+a+d));
-			painter->drawLine(x2-r2*cos(t+a), y2+r2*sin(t+a), x2-r2*cos(t+a)-ra*cos(t+a-d), y2+r2*sin(t+a)+ra*sin(t+a-d));
-		}
-
-
-		const double lx = p1.x();
-		const double ly = p1.y();
-
-		const double bcldist = 2;
-
-		const double rl = 60;
-		const double l  = 0.3;
-		const double a = 0;
-
-		const QPointF lb(lx-r1*cos(t+a),   ly+r1*sin(t+a));
-		const QPointF l1(lx-rl*cos(t+a-l), ly+rl*sin(t+a-l));
-		const QPointF l2(lx-rl*cos(t+a+l), ly+rl*sin(t+a+l));
-
-		painter->setPen(QPen(QBrush(Qt::green), 3));
-		painter->drawPoint(lb);
-		painter->drawPoint(l1);
-		painter->drawPoint(l2);
-
-		const double lx1 = l1.x();
-		const double ly1 = l1.y();
-		const double lx2 = l2.x();
-		const double ly2 = l2.y();
-
-		const QPointF lc((lx1+lx2)/2,(ly1+ly2)/2);
-		const QPointF bl(lc.x()-(ly2-ly1)*bcldist, lc.y()+(lx2-lx1)*bcldist);
-
-
-		QPainterPath loopbezier;
-		loopbezier.moveTo(lb);
-		loopbezier.cubicTo(l1, l2, lb);
-
-		painter->strokePath(loopbezier, QPen(QBrush(Qt::black), isSelected() ? 2 : 1));
-	}
+	return me->tail()->getVertex()->edgesWith(me->head()->getVertex()).indexOf(edge);
 }

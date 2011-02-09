@@ -257,7 +257,7 @@ void GraphDraw::mousePressEvent(QMouseEvent *event)
 
 			if(mode == ADD_EDGE)
 			{
-				graph->addEdge(ghostEdge->getV1()->getVertex(), vd2->getVertex());
+				graph->addEdge(ghostEdge->tail()->getVertex(), vd2->getVertex());
 
 				scene->removeItem(ghostEdge);
 				delete ghostEdge;
@@ -265,7 +265,7 @@ void GraphDraw::mousePressEvent(QMouseEvent *event)
 			}
 			else
 			{
-				graph->addArc(ghostArc->getTail()->getVertex(), vd2->getVertex());
+				graph->addArc(ghostArc->tail()->getVertex(), vd2->getVertex());
 
 				scene->removeItem(ghostArc);
 				delete ghostArc;
@@ -335,10 +335,7 @@ void GraphDraw::flipArc(Arc *arc)
 {
 	ArcDraw* ad = tables.A[arc];
 
-	VertexDraw* temp = ad->head;
-	ad->head = ad->tail;
-	ad->tail = temp;
-
+	ad->flip();
 	ad->update();
 }
 

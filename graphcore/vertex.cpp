@@ -102,14 +102,62 @@ QList<Edge*> Vertex::edges()
 	return E;
 }
 
+QList<Edge*> Vertex::edgesWith(Vertex *other)
+{
+	QList<Edge*> W;
+
+	foreach(Edge* edge, E)
+	{
+		if(edge->vertex1() == other || edge->vertex2() == other)
+		{
+			W.append(edge);
+		}
+	}
+
+	return W;
+}
+
+
+
 QList<Arc*> Vertex::inArcs()
 {
 	return I;
 }
 
+QList<Arc*> Vertex::arcsFrom(Vertex *other)
+{
+	QList<Arc*> W;
+
+	foreach(Arc* arc, I)
+	{
+		if(arc->tail() == other)
+		{
+			W.append(arc);
+		}
+	}
+
+	return W;
+}
+
+
 QList<Arc*> Vertex::outArcs()
 {
 	return O;
+}
+
+QList<Arc*> Vertex::arcsTo(Vertex *other)
+{
+	QList<Arc*> W;
+
+	foreach(Arc* arc, O)
+	{
+		if(arc->head() == other)
+		{
+			W.append(arc);
+		}
+	}
+
+	return W;
 }
 
 QList<Arc*> Vertex::arcs()
@@ -118,3 +166,7 @@ QList<Arc*> Vertex::arcs()
 }
 
 
+QList<Arc*> Vertex::arcsWith(Vertex *other)
+{
+	return arcsFrom(other) + arcsTo(other);
+}

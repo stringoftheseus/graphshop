@@ -1,29 +1,20 @@
 #ifndef EDGEDRAW_H
 #define EDGEDRAW_H
 
-#include <QGraphicsItem>
-#include "graphcore/vertex.h"
-#include "graphcore/edge.h"
+#include "linedraw.h"
 
-#include "drawtables.h"
-
-class EdgeDraw: public QGraphicsItem
+class EdgeDraw: public LineDraw
 {
 public:
 	EdgeDraw(VertexDraw* v1, VertexDraw* v2);
 	EdgeDraw(DrawTables* drawtables, Edge* edge);
 
-	QRectF boundingRect() const;
-	QPainterPath shape() const;
-	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-
 	Edge* getEdge();
-	VertexDraw* getV1();
+
+protected:
+	int index() const;
 
 private:
-	VertexDraw *v1, *v2;
-
-	DrawTables* const tables;
 	Edge* const edge;
 };
 

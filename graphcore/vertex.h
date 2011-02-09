@@ -22,9 +22,16 @@ public:
 	Q_INVOKABLE void setLabel(QString newLabel);
 
 	Q_INVOKABLE QList<Edge*> edges();
+	Q_INVOKABLE QList<Edge*> edgesWith(Vertex* other);
+
 	Q_INVOKABLE QList<Arc*> arcs();
+	Q_INVOKABLE QList<Arc*> arcsWith(Vertex* other);
+
 	Q_INVOKABLE QList<Arc*> inArcs();
+	Q_INVOKABLE QList<Arc*> arcsFrom(Vertex* other);
+
 	Q_INVOKABLE QList<Arc*> outArcs();
+	Q_INVOKABLE QList<Arc*> arcsTo(Vertex* other);
 
 	friend class Graph;
 

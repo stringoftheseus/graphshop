@@ -23,7 +23,7 @@ VertexDraw::VertexDraw(DrawTables *drawtables, Vertex *vertex): tables(drawtable
 	//setCacheMode(DeviceCoordinateCache);
 }
 
-int VertexDraw::radius()
+int VertexDraw::radius() const
 {
 	return r;
 }

@@ -1,34 +1,20 @@
 #ifndef arcdraw_h
 #define arcdraw_h
 
-#include <QMenu>
-#include <QObject>
-#include <QGraphicsItem>
+#include "linedraw.h"
 
-#include "graphcore/vertex.h"
-#include "graphcore/arc.h"
-
-#include "drawtables.h"
-
-class ArcDraw: public QGraphicsItem
+class ArcDraw: public LineDraw
 {
 public:
 	ArcDraw(VertexDraw *tail, VertexDraw *head);
 	ArcDraw(DrawTables* drawtables, Arc* arc);
 
-	QRectF boundingRect() const;
-	QPainterPath shape() const;
-	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-
 	Arc* getArc();
-	VertexDraw* getTail();
 
-	//int type() const;
+protected:
+	int index() const;
 
 private:
-	VertexDraw *head, *tail;
-
-	DrawTables* const tables;
 	Arc* const arc;
 
 	friend class GraphDraw;

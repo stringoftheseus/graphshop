@@ -53,7 +53,8 @@ HEADERS += \
     graphcore/algorithms/HabibMcConnell2000/vertexnode.h \
     graphcore/algorithms/HabibMcConnell2000/HabibMcConnell2000.h \
 	graphcore/algorithms/HabibMcConnell2000/cliquetree.h \
-    windows/graphgraphicsview.h
+    windows/graphgraphicsview.h \
+    windows/draw/linedraw.h
 
 SOURCES += graphcore/vertex.cpp \
 	graphcore/graph.cpp \
@@ -99,7 +100,8 @@ SOURCES += graphcore/vertex.cpp \
 	graphcore/algorithms/HabibMcConnell2000/HabibMcConnell2000.cpp \
     graphcore/algorithms/HabibMcConnell2000/rntree.cpp \
 	graphcore/algorithms/HabibMcConnell2000/cliquetree.cpp \
-    windows/graphgraphicsview.cpp
+    windows/graphgraphicsview.cpp \
+    windows/draw/linedraw.cpp
 
 OTHER_FILES += dev/notes.txt
 
