@@ -90,6 +90,8 @@ void EdgeDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 {
 	if(!v1->collidesWithItem(v2))
 	{
+		painter->setRenderHint(QPainter::Antialiasing);
+
 		const int r1 = v1->radius()+1;
 		const int r2 = v2->radius()+1;
 		const int ra = 8;
@@ -113,10 +115,10 @@ void EdgeDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 		const int vert = y1 > y2 ? 1 : -1;
 		const double t = acos(cost) * vert;
 
-		for(int i=-2; i<=2; i+=2)
+		for(int i=-2; i<=2; i++)
 		{
 			const double bcdist = pow(dist, 0.5)*i;
-			const double a = 0.2*i;
+			const double a = 0.3*i;
 			const double d = 0.4;
 
 			const QPointF pc((x1+x2)/2,(y1+y2)/2);
@@ -139,5 +141,39 @@ void EdgeDraw::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 			painter->drawLine(x2-r2*cos(t+a), y2+r2*sin(t+a), x2-r2*cos(t+a)-ra*cos(t+a+d), y2+r2*sin(t+a)+ra*sin(t+a+d));
 			painter->drawLine(x2-r2*cos(t+a), y2+r2*sin(t+a), x2-r2*cos(t+a)-ra*cos(t+a-d), y2+r2*sin(t+a)+ra*sin(t+a-d));
 		}
+
+
+		const double lx = p1.x();
+		const double ly = p1.y();
+
+		const double bcldist = 2;
+
+		const double rl = 60;
+		const double l  = 0.3;
+		const double a = 0;
+
+		const QPointF lb(lx-r1*cos(t+a),   ly+r1*sin(t+a));
+		const QPointF l1(lx-rl*cos(t+a-l), ly+rl*sin(t+a-l));
+		const QPointF l2(lx-rl*cos(t+a+l), ly+rl*sin(t+a+l));
+
+		painter->setPen(QPen(QBrush(Qt::green), 3));
+		painter->drawPoint(lb);
+		painter->drawPoint(l1);
+		painter->drawPoint(l2);
+
+		const double lx1 = l1.x();
+		const double ly1 = l1.y();
+		const double lx2 = l2.x();
+		const double ly2 = l2.y();
+
+		const QPointF lc((lx1+lx2)/2,(ly1+ly2)/2);
+		const QPointF bl(lc.x()-(ly2-ly1)*bcldist, lc.y()+(lx2-lx1)*bcldist);
+
+
+		QPainterPath loopbezier;
+		loopbezier.moveTo(lb);
+		loopbezier.cubicTo(l1, l2, lb);
+
+		painter->strokePath(loopbezier, QPen(QBrush(Qt::black), isSelected() ? 2 : 1));
 	}
 }
