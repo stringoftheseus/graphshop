@@ -300,6 +300,11 @@ void GraphDraw::mousePressEvent(QMouseEvent *event)
 	QGraphicsView::mousePressEvent(event);
 }
 
+void GraphDraw::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	mousePressEvent(event);
+}
+
 void GraphDraw::mouseReleaseEvent(QMouseEvent *event)
 {
 	QGraphicsView::mouseReleaseEvent(event);

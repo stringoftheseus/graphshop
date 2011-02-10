@@ -23,6 +23,9 @@ public slots:
 	void addGraph(Graph*);
 	void setGraph(Graph*);
 
+	void loadGraph();
+	void saveGraph(Graph*);
+
 	void setFullScreen(bool fullscreen=true);
 
 	CodeWindow* showCodePanel(bool show);
@@ -34,6 +37,8 @@ private:
 
 	ScriptWindow* _scriptPanel;
 	CodeWindow* _codePanel;
+
+	QMenu* saveGraphMenu;
 
 	QAction* viewSeparator;
 	QMenu* viewMenu;

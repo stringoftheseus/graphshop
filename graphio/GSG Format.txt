@@ -1,0 +1,47 @@
+GSP "GraphShop Graph" Format
+
+
+
+# this is a comment; if a line starts with a hash, it is a comment
+
+(blank lines like the above are ignored)
+= This is a section header; it contains a break of theme or type
+
+Format:
+
+# This is my Graph that I've saved
+
+=Graph
+label: this is a graph label; newlines will have to escape
+description: this is some other graph property; we don't currently support any of these
+
+=Vertex / VertexLables (we don't support these yet, but we might later)
+
+
+=ArcAdjacencyMatrix
+
+=EdgeAdjacencyMatrix
+
+
+
+
+Example:
+
+
+
+=Graph
+label: Test Graph
+
+=ArcAdjacencyMatrix
+0 1 0 0 0
+0 0 0 1 0
+1 0 0 0 0
+0 0 0 0 0
+1 0 0 0 1
+
+=EdgeAdjacencyMatrix
+0 1 0 1 1
+1 0 0 0 1
+0 0 1 0 0
+1 0 0 0 1
+1 1 0 1 1

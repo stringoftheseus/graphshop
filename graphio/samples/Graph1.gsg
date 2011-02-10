@@ -1,0 +1,17 @@
+# GraphShop Graph
+# 2011-02-11 12:09:38am
+
+=Graph
+label:Graph 7
+
+=ArcAdjacencyMatrix
+0 1 1 0
+1 1 0 1
+0 1 2 0
+1 0 3 0
+
+=EdgeAdjacencyMatrix
+0 0 0 2
+0 0 0 1
+0 0 0 0
+2 1 0 0

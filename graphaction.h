@@ -10,10 +10,11 @@ class GraphAction : public QAction
 	Q_OBJECT
 
 public:
-	explicit GraphAction(Graph* graph, QObject *parent = 0);
+	explicit GraphAction(Graph* graph, bool dots = false, QObject *parent = 0);
 
 protected:
 	Graph* graph;
+	bool dots;
 
 signals:
 	void triggered(Graph*);

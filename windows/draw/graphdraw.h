@@ -55,6 +55,7 @@ protected:
 	void showEvent(QShowEvent *event);
 
 	void mousePressEvent(QMouseEvent *event);
+	void mouseDoubleClickEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void dragMoveEvent(QDragMoveEvent *event);
 

@@ -24,9 +24,22 @@ Arc* ArcDraw::getArc()
 
 int ArcDraw::index() const
 {
-// TODO: this is an ugly hack and should be cleaned up, but right now I just need it working
-	ArcDraw* me = const_cast<ArcDraw*>(this);
+	int level;
 
-	return (  me->tail()->getVertex()->edgesWith(me->head()->getVertex()).size()
-			+ me->tail()->getVertex()->arcsWith(me->head()->getVertex()).indexOf(arc));
+	if(!_tail->getVertex()->arcsWith(_head->getVertex()).contains(arc))
+	{
+		level = 0;
+	}
+	else if(_head->getVertex()->index() > _tail->getVertex()->index())
+	{
+		level = (  _tail->getVertex()->edgesWith(_head->getVertex()).size()
+				+ _tail->getVertex()->arcsWith(_head->getVertex()).indexOf(arc));
+	}
+	else
+	{
+		level = (  _head->getVertex()->edgesWith(_tail->getVertex()).size()
+				+ _head->getVertex()->arcsWith(_tail->getVertex()).indexOf(arc));
+	}
+
+	return level;
 }

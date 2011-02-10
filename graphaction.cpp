@@ -1,6 +1,6 @@
 #include "graphaction.h"
 
-GraphAction::GraphAction(Graph* graph, QObject *parent): QAction(parent), graph(graph)
+GraphAction::GraphAction(Graph* graph, bool dots, QObject *parent): QAction(parent), graph(graph), dots(dots)
 {
 	updateText(graph->label());
 
@@ -10,7 +10,7 @@ GraphAction::GraphAction(Graph* graph, QObject *parent): QAction(parent), graph(
 
 void GraphAction::updateText(QString text)
 {
-	setText(text);
+	setText(text + (dots ? "..." : ""));
 }
 
 void GraphAction::processTrigger()

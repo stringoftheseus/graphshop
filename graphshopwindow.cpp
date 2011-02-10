@@ -1,4 +1,5 @@
 #include "graphcore/graph.h"
+#include "graphio/graphformatgsg.h"
 
 #include "graphpack.h"
 
@@ -18,8 +19,10 @@ GraphShopWindow::GraphShopWindow()
 
 	QMenu* fileMenu = menubar->addMenu("&File");
 		QMenu* fileNewMenu = fileMenu->addMenu("&New Graph");
-			/*QAction* newBlankGraph = */fileNewMenu->addAction("&Blank Graph", gsApp, SLOT(addNewGraph()));
+			fileNewMenu->addAction("&Blank Graph", gsApp, SLOT(addNewGraph()));
 
+		fileMenu->addAction("&Load Graph...", this, SLOT(loadGraph()));
+		saveGraphMenu = fileMenu->addMenu("&Save Graph");
 
 		QAction* closeAct = fileMenu->addAction("&Close", this, SLOT(close()));
 		closeAct->setShortcut(QKeySequence::Close);
@@ -120,12 +123,75 @@ void GraphShopWindow::addGraph(Graph *graph)
 	viewMenu->insertMenu(viewSeparator, panelMenu);
 	panelMenu->menuAction()->setVisible(true);
 
-	//graphMenu->addGraph(graph);
+
+	GraphAction* saveItem = new GraphAction(graph, true);
+	connect(saveItem, SIGNAL(triggered(Graph*)), SLOT(saveGraph(Graph*)));
+
+	saveGraphMenu->insertAction(0, saveItem);
 }
 
 void GraphShopWindow::setGraph(Graph *graph)
 {
 	//graphMenu->setGraph(graph);
+}
+
+void GraphShopWindow::loadGraph()
+{
+	QStringList filters;
+	filters << "GraphShop Graph (*.gsg)";
+
+	QFileDialog dialog(this);
+	dialog.setNameFilters(filters);
+	dialog.setAcceptMode(QFileDialog::AcceptOpen);
+	dialog.setFileMode(QFileDialog::ExistingFile);
+
+	if(dialog.exec())
+	{
+		QString fileName = dialog.selectedFiles()[0];
+		QString filter = dialog.selectedNameFilter();
+
+		if(filter == "GraphShop Graph (*.gsg)")
+		{
+			Graph* graph = new Graph(this);
+			bool success = GraphFormatGSG::loadFile(graph, fileName);
+
+			if(success)
+			{
+				gsApp->addGraph(graph);
+			}
+			else
+			{
+				QMessageBox::warning(this, "Load Error", "Unable to read or load file");
+			}
+		}
+	}
+}
+
+void GraphShopWindow::saveGraph(Graph* graph)
+{
+	QStringList filters;
+	filters << "GraphShop Graph (*.gsg)";
+
+	QFileDialog dialog(this);
+	dialog.setNameFilters(filters);
+	dialog.setAcceptMode(QFileDialog::AcceptSave);
+	dialog.setFileMode(QFileDialog::AnyFile);
+
+	if(dialog.exec())
+	{
+		QString fileName = dialog.selectedFiles()[0];
+		QString filter = dialog.selectedNameFilter();
+
+		if(filter == "GraphShop Graph (*.gsg)")
+		{
+			bool success = GraphFormatGSG::saveFile(graph, fileName);
+
+			if(!success)
+			{
+				QMessageBox::warning(this, "Save Error", "Unable to save graph");
+			}
+		}
+	}
 }
 
 void GraphShopWindow::switchToGraph(Graph *newgraph)

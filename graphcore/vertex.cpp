@@ -168,5 +168,15 @@ QList<Arc*> Vertex::arcs()
 
 QList<Arc*> Vertex::arcsWith(Vertex *other)
 {
-	return arcsFrom(other) + arcsTo(other);
+	QList<Arc*> W;
+
+	foreach(Arc* arc, O+I)
+	{
+		if(arc->head() == other || arc->tail() == other)
+		{
+			W.append(arc);
+		}
+	}
+
+	return W;
 }

@@ -55,17 +55,17 @@ QPainterPath LineDraw::linePath() const
 
 	if(_tail == _head)
 	{
-		// a. Draw a loop
+		// a. Draw a loop from a vertex to itself
 
 		// a.1. Set radius parameters
-		const int r = _tail->radius()+1; // radius of VertexDraw next to which we're drawing
-		const double rb = 5*r;           // radius of circle for Bezier control points
-		const int ra = r+5;              // radius of circle for arrow head line ends
+		const double r  = _tail->radius()+1; // radius of VertexDraw next to which we're drawing
+		const double rb = 5*r;               // radius of circle for Bezier control points
+		const double ra = r+5;               // radius of circle for arrow head line ends
 
 		// a.2 Set angle parameters
-		const double a = index();        // base angle (unique for each loop on a given vertex)
-		const double ab  = 0.3;          // separation angle for Bezier control points
-		const double aa = 0.6;           // separation angle for arrow head lines
+		const double a = index();       // base angle (unique for each loop on a given vertex)
+		const double b = 0.3;           // separation angle for Bezier control points
+		const double s = 0.3;           // separation angle for arrow head lines
 
 		// a.3. Get base point (center of base VertexDraw tranlated to this item's coordinates)
 		const QPointF p = mapFromItem(_tail, 0, 0);
@@ -74,8 +74,8 @@ QPainterPath LineDraw::linePath() const
 
 		// a.4. Calculate Bezier contorl points (where point 0 is the same as point 3)
 		const QPointF bc0(x-r*cos(a),     y+r*sin(a));
-		const QPointF bc1(x-rb*cos(a-ab), y+rb*sin(a-ab));
-		const QPointF bc2(x-rb*cos(a+ab), y+rb*sin(a+ab));
+		const QPointF bc1(x-rb*cos(a-b), y+rb*sin(a-b));
+		const QPointF bc2(x-rb*cos(a+b), y+rb*sin(a+b));
 
 		// a.5 Create the path for the main loop
 		path.moveTo(bc0);
@@ -88,12 +88,61 @@ QPainterPath LineDraw::linePath() const
 			path.lineTo(bc0 + QPointF(-ra*cos(a), ra*sin(a)));
 
 			path.moveTo(bc0);
-			path.lineTo(bc0 + QPointF(-ra*cos(a+aa), ra*sin(a+aa)));
+			path.lineTo(bc0 + QPointF(-ra*cos(a+2*s), ra*sin(a+2*s)));
 		}
 	}
 	else if(!_tail->collidesWithItem(_head))
 	{
+		// b. Draw an edge or arc from one vertex to another
 
+		// b.1. Calculate the draw orbit of this line
+		const int i = index();
+		const int q = ((i+1)/2)*pow(-1, i)*((_head > _tail) ? 1 : -1);
+
+		// b.2. Get the radius and position of vertex1 (the tail)
+		const int r1 = _tail->radius()+1;
+		const QPointF p1 = mapFromItem(_tail, 0, 0);
+		const double x1 = p1.x();
+		const double y1 = p1.y();
+
+		// b.3. Get the radius and position of vertex2 (the head)
+		const int r2 = _head->radius()+1;
+		const QPointF p2 = mapFromItem(_head, 0, 0);
+		const double x2 = p2.x();
+		const double y2 = p2.y();
+
+		// b.4. Set angles, withds, and other configurable properties
+		const double ra = r2+4;  // radius of circle for arrow head line ends
+		const double dp = 0.5;   // distance of Bezier control point (as a power of the line length)
+		const double a = 0.2*q;  // estimated relative ending angle of Bezier curve based on dp
+		const double s = 0.3;    // separation angle for arrow head lines
+
+		// b.5. Calculate line length and center point
+		const double l = sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+		const QPointF c((x1+x2)/2,(y1+y2)/2);
+
+		// b.6. Calculate exact line angle
+		const double t = acos((x2-x1)/l) * (y1 > y2 ? 1 : -1);
+
+		// b.7. Calculate Bezier control points
+		const double bcd = pow(l, dp)*q;                            // distanct from line to control point 1
+		const QPointF bc0(x1+r1*cos(t-a), y1-r2*sin(t-a));          // line starting point
+		const QPointF bc1(c+QPointF((y1-y2)/l*bcd, (x2-x1)/l*bcd)); // control point (off of line)
+		const QPointF bc2(x2-r2*cos(t+a), y2+r2*sin(t+a));          // line ending point
+
+		// b.8. Create the path for the line curve
+		path.moveTo(bc0);
+		path.quadTo(bc1, bc2);
+
+		// b.9 If this is a directed loop, add the arrow head lines
+		if(_directed)
+		{
+			path.moveTo(bc2);
+			path.lineTo(bc2 + QPointF(-ra*cos(t+a+s), ra*sin(t+a+s)));
+
+			path.moveTo(bc2);
+			path.lineTo(bc2 + QPointF(-ra*cos(t+a-s), ra*sin(t+a-s)));
+		}
 	}
 
 	return path;
@@ -108,55 +157,7 @@ QPainterPath LineDraw::linePath() const
 	{
 
 
-		const int r1 = v1->radius()+1;
-		const int r2 = v2->radius()+1;
-		const int ra = 8;
 
-		const QPointF p1 = mapFromItem(v1, 0, 0);
-		const QPointF p2 = mapFromItem(v2, 0, 0);
-
-		const double x1 = p1.x();
-		const double y1 = p1.y();
-		const double x2 = p2.x();
-		const double y2 = p2.y();
-
-		const double dx = x2 - x1;
-		const double dy = y2 - y1;
-
-		const double dist   = sqrt(dx*dx + dy*dy);
-
-		const double cost = dx / dist;
-		const double sint = dy / dist;
-
-		const int vert = y1 > y2 ? 1 : -1;
-		const double t = acos(cost) * vert;
-
-		for(int i=-2; i<=2; i++)
-		{
-			const double bcdist = pow(dist, 0.5)*i;
-			const double a = 0.3*i;
-			const double d = 0.4;
-
-			const QPointF pc((x1+x2)/2,(y1+y2)/2);
-			const QPointF bc1(pc.x()+(y1-y2)/dist*bcdist, pc.y()+(x2-x1)/dist*bcdist);
-
-			//painter->setPen(QPen(QBrush(Qt::black), isSelected() ? 2 : 1));
-			//painter->drawLine(x1+r1*sin(a), y1+r2*cos(a), x2-r2*sin(a), y2-r2*cos(a));
-
-			//painter->setPen(QPen(QBrush(Qt::blue), 1));
-			//painter->drawLine(pc, bc1);
-
-
-			QPainterPath edgebezier;
-			edgebezier.moveTo(             x1+r1*cos(t-a), y1-r2*sin(t-a));
-			edgebezier.quadTo(bc1, QPointF(x2-r2*cos(t+a), y2+r2*sin(t+a)));
-
-			painter->strokePath(edgebezier, QPen(QBrush(Qt::black), isSelected() ? 2 : 1));
-
-			painter->setPen(QPen(QBrush(Qt::black), isSelected() ? 2 : 1));
-			painter->drawLine(x2-r2*cos(t+a), y2+r2*sin(t+a), x2-r2*cos(t+a)-ra*cos(t+a+d), y2+r2*sin(t+a)+ra*sin(t+a+d));
-			painter->drawLine(x2-r2*cos(t+a), y2+r2*sin(t+a), x2-r2*cos(t+a)-ra*cos(t+a-d), y2+r2*sin(t+a)+ra*sin(t+a-d));
-		}
 		*/
 
 }
