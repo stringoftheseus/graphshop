@@ -14,6 +14,52 @@ GraphPack::GraphPack(Graph *graph, GraphShopWindow *parent) : QObject(parent), _
 	connect(_panelMenu, SIGNAL(aboutToShow()), SLOT(build()));
 }
 
+AdjMatrixWindow* GraphPack::adjMatrixWindow()
+{
+	return _adjMatrixWindow;
+}
+
+DrawWindow* GraphPack::drawWindow()
+{
+	return _drawWindow;
+}
+
+IntervalGraphWindow* GraphPack::intervalGraphWindow()
+{
+	return _intervalGraphWindow;
+}
+
+TournamentWindow* GraphPack::tournamentWindow()
+{
+	return _tournamentWindow;
+}
+
+GraphPack* GraphPack::competitionGraph()
+{
+	return _competitionGraph;
+}
+
+GraphPack* GraphPack::complementGraph()
+{
+	return _complementGraph;
+}
+
+GraphPack* GraphPack::converseGraph()
+{
+	return _converseGraph;
+}
+
+GraphPack* GraphPack::dominationGraph()
+{
+	return _dominationGraph;
+}
+
+GraphPack* GraphPack::underlyingGraph()
+{
+	return _underlyingGraph;
+}
+
+
 void GraphPack::build()
 {
 	if(!built)

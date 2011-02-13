@@ -11,19 +11,24 @@
 
 DrawWindow::DrawWindow(Graph *graph, GraphShopWindow *parent): GraphWindow(parent), _graph(graph)
 {
-	draw = 0;
+	_draw = 0;
 
 	updateTitle();
+}
+
+GraphDraw* DrawWindow::draw()
+{
+	return _draw;
 }
 
 void DrawWindow::_build()
 {
 	_graph->build();
 
-	draw = new GraphDraw(_graph);
-	widget()->layout()->addWidget(draw);
+	_draw = new GraphDraw(_graph);
+	widget()->layout()->addWidget(_draw);
 
-	_toolbar->insertAction(0, draw->exportAction());
+	_toolbar->insertAction(0, _draw->exportAction());
 	_toolbar->addSeparator();
 
 	QActionGroup* modeGroup = new QActionGroup(this);
@@ -131,9 +136,9 @@ void DrawWindow::resizeEvent(QResizeEvent *event)
 {
 	QWidget::resizeEvent(event);
 
-	if(draw)
+	if(_draw)
 	{
-		draw->updateRect();
+		_draw->updateRect();
 	}
 }
 
@@ -142,7 +147,7 @@ void DrawWindow::keyPressEvent(QKeyEvent *event)
 {
 	if(event->key() == Qt::Key_Escape)
 	{
-		draw->setMode(GraphDraw::SELECT);
+		_draw->setMode(GraphDraw::SELECT);
 	}
 }
 */
@@ -150,22 +155,22 @@ void DrawWindow::keyPressEvent(QKeyEvent *event)
 
 void DrawWindow::zoomIn()
 {
-	draw->scale(1.2, 1.2);
+	_draw->scale(1.2, 1.2);
 }
 
 void DrawWindow::zoomOut()
 {
-	draw->scale(1/1.2, 1/1.2);
+	_draw->scale(1/1.2, 1/1.2);
 }
 
 void DrawWindow::zoomStd()
 {
-	draw->resetView();
+	_draw->resetView();
 }
 
 void DrawWindow::zoomAll()
 {
-	draw->viewAll();
+	_draw->viewAll();
 }
 
 void DrawWindow::rotateCW()
@@ -185,27 +190,27 @@ void DrawWindow::rotateCW()
 			 which would be really awesome!
 	*/
 
-	draw->rotate(22.5);
+	_draw->rotate(22.5);
 }
 
 void DrawWindow::rotateCCW()
 {
-	draw->rotate(-22.5);
+	_draw->rotate(-22.5);
 }
 
 void DrawWindow::layoutRandom()
 {
-	draw->doLayout(new RandomLayout());
+	_draw->doLayout(new RandomLayout());
 }
 
 void DrawWindow::layoutCircle()
 {
-	draw->doLayout(new CircleLayout(), 2);
+	_draw->doLayout(new CircleLayout(), 2);
 }
 
 void DrawWindow::layoutGravity()
 {
-	draw->doLayout(new GravityLayout(), 2);
+	_draw->doLayout(new GravityLayout(), 2);
 }
 
 void DrawWindow::updateTitle()
@@ -215,5 +220,5 @@ void DrawWindow::updateTitle()
 
 void DrawWindow::setMode(QAction *action)
 {
-	draw->setMode(static_cast<GraphDraw::InteractionMode>(action->data().toInt()));
+	_draw->setMode(static_cast<GraphDraw::InteractionMode>(action->data().toInt()));
 }

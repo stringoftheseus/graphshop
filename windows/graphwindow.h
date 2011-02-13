@@ -12,10 +12,7 @@ class GraphWindow: public QDockWidget
 
 public:
 	GraphWindow(GraphShopWindow* parent);
-
 	void build();
-
-public slots:
 
 protected:
 	QToolBar* _toolbar;

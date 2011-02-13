@@ -13,8 +13,7 @@ GraphShopApp::GraphShopApp(int& argc, char** argv) : QApplication(argc, argv)
 	gsApp = this;
 
 	_setupScripting();
-
-
+/*
 	Graph* graph = addNewGraph("Graph 1");
 	graph->addArc(0, 1);
 	graph->addArc(0, 2);
@@ -37,6 +36,7 @@ GraphShopApp::GraphShopApp(int& argc, char** argv) : QApplication(argc, argv)
 	graph->addVertex();
 
 	graph = addNewGraph("Graph 4");
+*/
 }
 
 void GraphShopApp::_setupScripting()

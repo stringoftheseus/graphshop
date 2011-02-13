@@ -55,7 +55,7 @@ HEADERS += \
 	graphcore/algorithms/HabibMcConnell2000/cliquetree.h \
     windows/graphgraphicsview.h \
     windows/draw/linedraw.h \
-    graphio/graphformatgsg.h
+	graphio/graphformatgsp.h
 
 SOURCES += graphcore/vertex.cpp \
 	graphcore/graph.cpp \
@@ -103,7 +103,7 @@ SOURCES += graphcore/vertex.cpp \
 	graphcore/algorithms/HabibMcConnell2000/cliquetree.cpp \
     windows/graphgraphicsview.cpp \
     windows/draw/linedraw.cpp \
-    graphio/graphformatgsg.cpp
+	graphio/graphformatgsp.cpp
 
 OTHER_FILES += dev/notes.txt
 

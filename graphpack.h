@@ -16,8 +16,18 @@ class GraphPack : public QObject
 public:
 	GraphPack(Graph* graph, GraphShopWindow* parent);
 
+	AdjMatrixWindow* adjMatrixWindow();
+	DrawWindow* drawWindow();
+	IntervalGraphWindow* intervalGraphWindow();
+	TournamentWindow* tournamentWindow();
+
+	GraphPack* competitionGraph();
+	GraphPack* complementGraph();
+	GraphPack* converseGraph();
+	GraphPack* dominationGraph();
+	GraphPack* underlyingGraph();
+
 	QMenu* panelMenu();
-signals:
 
 public slots:
 	void build();

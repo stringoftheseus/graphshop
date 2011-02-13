@@ -1,5 +1,5 @@
 #include "graphcore/graph.h"
-#include "graphio/graphformatgsg.h"
+#include "graphio/graphformatgsp.h"
 
 #include "graphpack.h"
 
@@ -21,10 +21,13 @@ GraphShopWindow::GraphShopWindow()
 		QMenu* fileNewMenu = fileMenu->addMenu("&New Graph");
 			fileNewMenu->addAction("&Blank Graph", gsApp, SLOT(addNewGraph()));
 
-		fileMenu->addAction("&Load Graph...", this, SLOT(loadGraph()));
+		fileMenu->addAction("&Open Graph/Project...", this, SLOT(loadProject()));
 		saveGraphMenu = fileMenu->addMenu("&Save Graph");
+		fileMenu->addAction("Save &Project...", this, SLOT(saveProject()));
 
-		QAction* closeAct = fileMenu->addAction("&Close", this, SLOT(close()));
+		fileMenu->addSeparator();
+
+		QAction* closeAct = fileMenu->addAction("&Close Window", this, SLOT(close()));
 		closeAct->setShortcut(QKeySequence::Close);
 		closeAct->setStatusTip(tr("Close the current GraphShop Window"));
 
@@ -135,10 +138,10 @@ void GraphShopWindow::setGraph(Graph *graph)
 	//graphMenu->setGraph(graph);
 }
 
-void GraphShopWindow::loadGraph()
+void GraphShopWindow::loadProject()
 {
 	QStringList filters;
-	filters << "GraphShop Graph (*.gsg)";
+	filters << "GraphShop Graph/Project (*.gsg *.gsp)";
 
 	QFileDialog dialog(this);
 	dialog.setNameFilters(filters);
@@ -150,18 +153,53 @@ void GraphShopWindow::loadGraph()
 		QString fileName = dialog.selectedFiles()[0];
 		QString filter = dialog.selectedNameFilter();
 
-		if(filter == "GraphShop Graph (*.gsg)")
+		if(filter == "GraphShop Graph/Project (*.gsg *.gsp)")
 		{
-			Graph* graph = new Graph(this);
-			bool success = GraphFormatGSG::loadFile(graph, fileName);
-
-			if(success)
+			QFile sourceFile(fileName);
+			if(sourceFile.open(QIODevice::ReadOnly | QIODevice::Text))
 			{
-				gsApp->addGraph(graph);
+				QTextStream source(&sourceFile);
+
+				bool success = GraphFormatGSP(this).load(source);
+				if(!success)
+				{
+					QMessageBox::warning(this, "Load Error", "Unable to decode file");
+				}
 			}
 			else
 			{
-				QMessageBox::warning(this, "Load Error", "Unable to read or load file");
+				QMessageBox::warning(this, "Load Error", "Unable to read file");
+			}
+		}
+	}
+}
+
+void GraphShopWindow::saveProject()
+{
+	QStringList filters;
+	filters << "GraphShop Project (*.gsp)";
+
+	QFileDialog dialog(this);
+	dialog.setNameFilters(filters);
+	dialog.setAcceptMode(QFileDialog::AcceptSave);
+	dialog.setFileMode(QFileDialog::AnyFile);
+
+	if(dialog.exec())
+	{
+		QString fileName = dialog.selectedFiles()[0];
+		QString filter = dialog.selectedNameFilter();
+
+		if(filter == "GraphShop Project (*.gsp)")
+		{
+			QFile destFile(fileName);
+			if(destFile.open(QFile::WriteOnly | QIODevice::Text))
+			{
+				QTextStream dest(&destFile);
+				GraphFormatGSP(this).save(dest);
+			}
+			else
+			{
+				QMessageBox::warning(this, "Load Error", "Unable to save file");
 			}
 		}
 	}
@@ -184,11 +222,15 @@ void GraphShopWindow::saveGraph(Graph* graph)
 
 		if(filter == "GraphShop Graph (*.gsg)")
 		{
-			bool success = GraphFormatGSG::saveFile(graph, fileName);
-
-			if(!success)
+			QFile destFile(fileName);
+			if(destFile.open(QFile::WriteOnly | QIODevice::Text))
 			{
-				QMessageBox::warning(this, "Save Error", "Unable to save graph");
+				QTextStream dest(&destFile);
+				GraphFormatGSP(this).saveGraph(graph, dest);
+			}
+			else
+			{
+				QMessageBox::warning(this, "Load Error", "Unable to save file");
 			}
 		}
 	}

@@ -1,5 +1,4 @@
 #include "graphaction.h"
-
 #include "graphwindow.h"
 
 GraphWindow::GraphWindow(GraphShopWindow *parent): QDockWidget(parent)

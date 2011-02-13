@@ -11,6 +11,8 @@ class DrawWindow : public GraphWindow
 public:
 	DrawWindow(Graph* graph, GraphShopWindow* parent);
 
+	GraphDraw* draw();
+
 protected:
 	void _build();
 	//void keyPressEvent(QKeyEvent *);
@@ -18,7 +20,7 @@ protected:
 
 private:
 	Graph* _graph;
-	GraphDraw* draw;
+	GraphDraw* _draw;
 
 private slots:
 	void zoomIn();

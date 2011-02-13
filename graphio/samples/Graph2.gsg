@@ -1,7 +1,6 @@
 # GraphShop Graph
 # 2011-02-11 12:14:42am
-
-=Graph
++Graph
 label:Graph 2
 
 =EdgeAdjacencyMatrix
@@ -10,3 +9,5 @@ label:Graph 2
 0 1 0 1 0
 0 1 1 0 0
 0 0 0 0 0
+
+$

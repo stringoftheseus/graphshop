@@ -7,6 +7,7 @@
 
 #include "graphshopapp.h"
 #include "graphmenu.h"
+
 #include "windows/script/codewindow.h"
 #include "windows/script/scriptwindow.h"
 
@@ -23,7 +24,8 @@ public slots:
 	void addGraph(Graph*);
 	void setGraph(Graph*);
 
-	void loadGraph();
+	void loadProject();
+	void saveProject();
 	void saveGraph(Graph*);
 
 	void setFullScreen(bool fullscreen=true);
