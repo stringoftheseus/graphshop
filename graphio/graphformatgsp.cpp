@@ -9,6 +9,35 @@ GraphFormatGSP::GraphFormatGSP(GraphShopWindow* window): _window(window)
 {
 }
 
+bool GraphFormatGSP::load(QTextStream& source)
+{
+	// 1. Read the first line, removing the '\n' char from end
+	QString line = source.readLine().trimmed();
+
+	// 2. Read the file a line at a time
+	while(source.atEnd() == false)
+	{
+		if(line.isEmpty() || line[0] == '#')
+		{
+			// 2a. Ignore comments and blank lines (read the next one)
+			line = source.readLine().trimmed();
+		}
+		else if(line == "$")
+		{
+			// 2b. End of file
+			break;
+		}
+		else if(line == "+Graph")
+		{
+			// 2c. Start a new Graph
+			line = loadGraph(source);
+		}
+	}
+
+	// 3. If nothing broke yet, assume it worked
+	return true;
+}
+
 void GraphFormatGSP::save(QTextStream& dest)
 {
 	// 1. Start with a header section with date and such
@@ -26,105 +55,16 @@ void GraphFormatGSP::save(QTextStream& dest)
 	dest << '$';
 }
 
-bool GraphFormatGSP::load(QTextStream& source)
+
+QString GraphFormatGSP::loadGraph(QTextStream& source)
 {
-	// 1. Read the first line, removing the '\n' char from end
-	QString line = source.readLine().trimmed();
+	// 1. Create a new empty graph and add it to the application
+	Graph* graph = gsApp->addNewGraph();
 
-	// 2. Read the file a line at a time
-	while(source.atEnd() == false)
-	{
-		if(line.isEmpty() || line[0] == '#')
-		{
-			// 2a. Ignore comments and blank lines
-			line = source.readLine().trimmed();
-		}
-		else if(line == "$")
-		{
-			// 2b. End of file
-			break;
-		}
-		else if(line == "+Graph")
-		{
-			// 2c. Start a new Graph
-			line = loadGraph(gsApp->addNewGraph(),  source);
-		}
-	}
-
-	// 3. If nothing broke yet, assume it worked
-	return true;
-}
-
-
-void GraphFormatGSP::saveGraph(Graph* graph, QTextStream& dest)
-{
-	// 1. Add the Graph Properties section
-	dest << "+Graph" << endl;
-
-	QString id = QString::number((long)graph);
-	dest << "id:" << id << endl;
-	_graph_id[graph] = id;
-
-	dest << "label:" << graph->label() << endl;
-	dest << "vertexCount:" << graph->vertexCount() << endl;
-
-	// 2. Add an Arc Adjacency Matrix section if there are arcs in the graph
-	if(graph->arcCount() > 0)
-	{
-		// 2.1. Write the section header
-		dest << endl;
-		dest << "=ArcAdjacencyMatrix" << endl;
-
-		// 2.2. Write a row for each vertex in the graph
-		for(int t=0; t<graph->vertexCount(); t++)
-		{
-			// 2.2.1. Start with an empty list of strings
-			QStringList row;
-
-			// 2.2.2. Add the arc multiplicity for each column
-			for(int h=0; h<graph->vertexCount(); h++)
-			{
-				row.append(QString::number(graph->arcMultiplicity(t, h)));
-			}
-
-			// 2.2.3. Print a line with the multiplicities separated by spaces
-			dest << row.join(" ") << endl;
-		}
-	}
-
-	// 3. Add an Edge Adjacency Matrix section if there are edges in the graph
-	if(graph->edgeCount() > 0)
-	{
-		// 3.1. Write the section header
-		dest << endl;
-		dest << "=EdgeAdjacencyMatrix" << endl;
-
-		// 3.2. Add a line for each vertex in the graph
-		for(int v1=0; v1<graph->vertexCount(); v1++)
-		{
-			// 3.2.1. Start with an empty list of strings
-			QStringList row;
-
-			// 3.2.2. Add the edge multiplicity for each column
-			for(int v2=0; v2<graph->vertexCount(); v2++)
-			{
-				row.append(QString::number(graph->edgeMultiplicity(v1, v2)));
-			}
-
-			// 3.2.3. Print the line with the multiplicities separated by spaces
-			dest << row.join(" ") << endl;
-		}
-	}
-}
-
-
-QString GraphFormatGSP::loadGraph(Graph* graph, QTextStream& source)
-{
-	// 1. Keep track of what we're doing later on
+	// 2. Read the file a line at a time and process with a state machine
 	int i;
 	enum {GRAPH, ARCADJACENCYMATRIX, EDGEADJACENCYMATRIX} state = GRAPH;
 
-	// 2. Read the file a line at a time
 	while(source.atEnd() == false)
 	{
 		// 2.1. Read the next line, removing the '\n' char from end
@@ -225,18 +165,94 @@ QString GraphFormatGSP::loadGraph(Graph* graph, QTextStream& source)
 }
 
 
+void GraphFormatGSP::saveGraph(Graph* graph, QTextStream& dest)
+{
+	// 1. Add the Graph Properties section
+	dest << "+Graph" << endl;
+
+	QString id = QString::number((long)graph);
+	dest << "id:" << id << endl;
+	_graph_id[graph] = id;
+
+	dest << "label:" << graph->label() << endl;
+	dest << "vertexCount:" << graph->vertexCount() << endl;
+
+	// 2. Add an Arc Adjacency Matrix section if there are arcs in the graph
+	if(graph->arcCount() > 0)
+	{
+		// 2.1. Write the section header
+		dest << endl;
+		dest << "=ArcAdjacencyMatrix" << endl;
+
+		// 2.2. Write a row for each vertex in the graph
+		for(int t=0; t<graph->vertexCount(); t++)
+		{
+			// 2.2.1. Start with an empty list of strings
+			QStringList row;
+
+			// 2.2.2. Add the arc multiplicity for each column
+			for(int h=0; h<graph->vertexCount(); h++)
+			{
+				row.append(QString::number(graph->arcMultiplicity(t, h)));
+			}
+
+			// 2.2.3. Print a line with the multiplicities separated by spaces
+			dest << row.join(" ") << endl;
+		}
+	}
+
+	// 3. Add an Edge Adjacency Matrix section if there are edges in the graph
+	if(graph->edgeCount() > 0)
+	{
+		// 3.1. Write the section header
+		dest << endl;
+		dest << "=EdgeAdjacencyMatrix" << endl;
+
+		// 3.2. Add a line for each vertex in the graph
+		for(int v1=0; v1<graph->vertexCount(); v1++)
+		{
+			// 3.2.1. Start with an empty list of strings
+			QStringList row;
+
+			// 3.2.2. Add the edge multiplicity for each column
+			for(int v2=0; v2<graph->vertexCount(); v2++)
+			{
+				row.append(QString::number(graph->edgeMultiplicity(v1, v2)));
+			}
+
+			// 3.2.3. Print the line with the multiplicities separated by spaces
+			dest << row.join(" ") << endl;
+		}
+	}
+}
+
+
+
+
+
+
+
+
 #ifdef false
-void saveAdjMatrixWindow(AdjMatrixWindow* window, QTextStream& dest);
-QString loadAdjMatrixWindow(AdjMatrixWindow* window, QTextStream& source);
+	QString loadAdjMatrixWindow(QTextStream& source);
+	void saveAdjMatrixWindow(AdjMatrixWindow* window, QTextStream& dest);
 
-void saveDrawWindow(DrawWindow* window, QTextStream& dest);
-QString loadDrawWindow(DrawWindow* window, QTextStream& source);
+	QString loadDrawWindow(QTextStream& source);
+#endif
 
-void saveIntervalGraphWindow(IntervalGraphWindow* window, QTextStream& dest);
-QString loadIntervalGraphWindow(IntervalGraphWindow* window, QTextStream& source);
+void GraphFormatGSP::saveDrawWindow(DrawWindow* window, QTextStream& dest)
+{
 
-void saveTournamentWindow(TournamentWindow* window, QTextStream& dest);
-QString loadTournamentWindow(TournamentWindow* window, QTextStream& source);
+}
+
+#ifdef false
+
+
+	QString loadIntervalGraphWindow(QTextStream& source);
+	void saveIntervalGraphWindow(IntervalGraphWindow* window, QTextStream& dest);
+
+	QString loadTournamentWindow(QTextStream& source);
+	void saveTournamentWindow(TournamentWindow* window, QTextStream& dest);
 #endif
 
 

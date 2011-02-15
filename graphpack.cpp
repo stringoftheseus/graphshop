@@ -8,10 +8,15 @@
 
 GraphPack::GraphPack(Graph *graph, GraphShopWindow *parent) : QObject(parent), _graph(graph), _parent(parent)
 {
-	built = false;
+	_built = false;
 
 	_panelMenu = new QMenu(graph->label(), _parent);
 	connect(_panelMenu, SIGNAL(aboutToShow()), SLOT(build()));
+}
+
+bool GraphPack::built()
+{
+	return _built;
 }
 
 AdjMatrixWindow* GraphPack::adjMatrixWindow()
@@ -62,7 +67,7 @@ GraphPack* GraphPack::underlyingGraph()
 
 void GraphPack::build()
 {
-	if(!built)
+	if(!_built)
 	{
 		_adjMatrixWindow = new AdjMatrixWindow(_graph, _parent);
 		_panelMenu->addAction(_adjMatrixWindow->toggleViewAction());
@@ -95,7 +100,7 @@ void GraphPack::build()
 		_panelMenu->addMenu(_underlyingGraph->panelMenu());
 
 
-		built = true;
+		_built = true;
 	}
 }
 
@@ -123,7 +128,7 @@ void GraphPack::swapOut()
 
 void GraphPack::hidePanels()
 {
-	if(built)
+	if(_built)
 	{
 		_adjMatrixWindow->hide();
 		_drawWindow->hide();

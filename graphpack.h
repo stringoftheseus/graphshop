@@ -15,6 +15,7 @@ class GraphPack : public QObject
 
 public:
 	GraphPack(Graph* graph, GraphShopWindow* parent);
+	bool built();
 
 	AdjMatrixWindow* adjMatrixWindow();
 	DrawWindow* drawWindow();
@@ -38,7 +39,7 @@ public slots:
 	void hidePanels();
 
 private:
-	bool built;
+	bool _built;
 	QByteArray _panelState;
 
 	Graph* _graph;

@@ -11,23 +11,24 @@ class GraphFormatGSP
 public:
 	GraphFormatGSP(GraphShopWindow* window);
 
-	void save(QTextStream& dest);
 	bool load(QTextStream& source);
+	void save(QTextStream& dest);
 
+	QString loadGraph(QTextStream& source);
 	void saveGraph(Graph* graph, QTextStream& dest);
-	QString loadGraph(Graph* graph, QTextStream& source);
 
+	QString loadAdjMatrixWindow(QTextStream& source);
 	void saveAdjMatrixWindow(AdjMatrixWindow* window, QTextStream& dest);
-	QString loadAdjMatrixWindow(AdjMatrixWindow* window, QTextStream& source);
 
+	QString loadDrawWindow(QTextStream& source);
 	void saveDrawWindow(DrawWindow* window, QTextStream& dest);
-	QString loadDrawWindow(DrawWindow* window, QTextStream& source);
 
+	QString loadIntervalGraphWindow(QTextStream& source);
 	void saveIntervalGraphWindow(IntervalGraphWindow* window, QTextStream& dest);
-	QString loadIntervalGraphWindow(IntervalGraphWindow* window, QTextStream& source);
 
+	QString loadTournamentWindow(QTextStream& source);
 	void saveTournamentWindow(TournamentWindow* window, QTextStream& dest);
-	QString loadTournamentWindow(TournamentWindow* window, QTextStream& source);
+
 
 private:
 	GraphShopWindow* _window;
