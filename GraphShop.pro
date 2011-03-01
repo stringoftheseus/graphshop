@@ -55,7 +55,8 @@ HEADERS += \
 	graphcore/algorithms/HabibMcConnell2000/cliquetree.h \
     windows/graphgraphicsview.h \
     windows/draw/linedraw.h \
-	graphio/graphformatgsp.h
+	graphio/graphformatgsp.h \
+    windows/draw/layout/rotatelayout.h
 
 SOURCES += graphcore/vertex.cpp \
 	graphcore/graph.cpp \
@@ -103,8 +104,9 @@ SOURCES += graphcore/vertex.cpp \
 	graphcore/algorithms/HabibMcConnell2000/cliquetree.cpp \
     windows/graphgraphicsview.cpp \
     windows/draw/linedraw.cpp \
-	graphio/graphformatgsp.cpp
+	graphio/graphformatgsp.cpp \
+    windows/draw/layout/rotatelayout.cpp
 
 OTHER_FILES += dev/notes.txt
-
+ RC_FILE = graphshop.rc
 QT += script

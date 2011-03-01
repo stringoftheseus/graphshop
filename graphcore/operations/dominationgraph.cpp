@@ -15,6 +15,7 @@ QScriptValue DominationGraph::sDominationGraph(QScriptContext *context, QScriptE
 Graph* DominationGraph::of(Graph const* source)
 {
 	DominationGraph dom(source);
+	dom.build();
 
 	return dom.clone();
 }

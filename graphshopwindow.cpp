@@ -10,6 +10,9 @@ GraphShopWindow::GraphShopWindow()
 {
 	setWindowTitle("GraphShop");
 	setWindowState(Qt::WindowActive | Qt::WindowMaximized);
+	//setWindowIcon(QIcon("img/graphshop_orange_circle.ico"));
+
+//	setStyleSheet("QToolBar{background-color: green;} QDockWidget{background-color: yellow;} QMainWindow::separator{color: orange;}  QMainWindow::separator {background: yellow;		width: 10px; /* when vertical */		height: 10px; /* when horizontal */} QMainWindow::separator:hover {		background: red;}");
 
 	_graph = 0;
 	_scriptPanel = 0;
@@ -19,7 +22,7 @@ GraphShopWindow::GraphShopWindow()
 
 	QMenu* fileMenu = menubar->addMenu("&File");
 		QMenu* fileNewMenu = fileMenu->addMenu("&New Graph");
-			fileNewMenu->addAction("&Blank Graph", gsApp, SLOT(addNewGraph()));
+			fileNewMenu->addAction("&Null Graph", gsApp, SLOT(addNewGraph()));
 
 		fileMenu->addAction("&Open Graph/Project...", this, SLOT(loadProject()));
 		saveGraphMenu = fileMenu->addMenu("&Save Graph");
@@ -27,9 +30,9 @@ GraphShopWindow::GraphShopWindow()
 
 		fileMenu->addSeparator();
 
-		QAction* closeAct = fileMenu->addAction("&Close Window", this, SLOT(close()));
+		/*QAction* closeAct = fileMenu->addAction("&Close Window", this, SLOT(close()));
 		closeAct->setShortcut(QKeySequence::Close);
-		closeAct->setStatusTip(tr("Close the current GraphShop Window"));
+		closeAct->setStatusTip(tr("Close the current GraphShop Window"));*/
 
 		QAction* exitAct = fileMenu->addAction("E&xit", qApp, SLOT(closeAllWindows()));
 		exitAct->setShortcut(QKeySequence::Quit);
@@ -71,7 +74,10 @@ GraphShopWindow::GraphShopWindow()
 
 
 	showCodePanel(true);
+	viewCode->setChecked(true);
+
 	showScriptPanel(true);
+	viewScript->setChecked(true);
 }
 
 

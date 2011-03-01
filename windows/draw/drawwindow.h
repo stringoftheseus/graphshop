@@ -22,6 +22,9 @@ private:
 	Graph* _graph;
 	GraphDraw* _draw;
 
+	QToolButton* _modeButton;
+	QToolButton* _layoutButton;
+
 private slots:
 	void zoomIn();
 	void zoomOut();
@@ -32,6 +35,7 @@ private slots:
 
 	void setMode(QAction*);
 
+	void layoutChange(QAction*);
 	void layoutRandom();
 	void layoutCircle();
 	void layoutGravity();

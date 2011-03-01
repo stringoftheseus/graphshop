@@ -1,12 +1,12 @@
 #ifndef tournamentdraw_H
 #define tournamentdraw_H
 
-#include <QGraphicsView>
 #include "graphcore/representations/tournament.h"
 
+#include "windows/graphgraphicsview.h"
 #include "tournamentvertexdraw.h"
 
-class TournamentDraw : public QGraphicsView
+class TournamentDraw : public GraphGraphicsView
 {
 	Q_OBJECT
 

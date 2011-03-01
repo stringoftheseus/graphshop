@@ -15,6 +15,7 @@ QScriptValue UnderlyingGraph::sUnderlyingGraph(QScriptContext *context, QScriptE
 Graph* UnderlyingGraph::of(const Graph* source)
 {
 	UnderlyingGraph under(source);
+	under.build();
 
 	return under.clone();
 }

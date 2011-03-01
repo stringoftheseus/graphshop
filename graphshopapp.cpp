@@ -8,7 +8,7 @@
 GraphShopApp* gsApp = 0;
 
 GraphShopApp::GraphShopApp(int& argc, char** argv) : QApplication(argc, argv)
-{
+{	
 	// Global app pointer, similar to qApp, so we don't have to cast it every time we use one of these functions
 	gsApp = this;
 
@@ -57,13 +57,13 @@ void GraphShopApp::_setupScripting()
 	//qScriptRegisterQObjectMetaType<AdjMatrixWindow*>(_scriptEngine);
 
 	_scriptEngine->globalObject().setProperty("Graph", _scriptEngine->newFunction(Graph::sGraph));
+	_scriptEngine->globalObject().setProperty("CompetitionGraph", _scriptEngine->newFunction(CompetitionGraph::sCompetitionGraph));
 	_scriptEngine->globalObject().setProperty("ComplementGraph", _scriptEngine->newFunction(ComplementGraph::sComplementGraph));
 	_scriptEngine->globalObject().setProperty("ConverseGraph", _scriptEngine->newFunction(ConverseGraph::sConverseGraph));
 	_scriptEngine->globalObject().setProperty("DominationGraph", _scriptEngine->newFunction(DominationGraph::sDominationGraph));
 	_scriptEngine->globalObject().setProperty("UnderlyingGraph", _scriptEngine->newFunction(UnderlyingGraph::sUnderlyingGraph));
 
-
-	_scriptEngine->globalObject().setProperty("ui", _scriptEngine->newQObject(this));
+	_scriptEngine->globalObject().setProperty("window", _scriptEngine->newQObject(this));
 }
 
 
@@ -85,6 +85,16 @@ Graph* GraphShopApp::addGraph(Graph* graph)
 	emit graphAdded(graph);
 
 	return graph;
+}
+
+Graph* GraphShopApp::getGraph(int i)
+{
+	return _graphList[i];
+}
+
+int GraphShopApp::graphCount()
+{
+	return _graphList.count();
 }
 
 Graph* GraphShopApp::addNewGraph(QString label)

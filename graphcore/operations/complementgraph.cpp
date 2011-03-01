@@ -15,6 +15,7 @@ QScriptValue ComplementGraph::sComplementGraph(QScriptContext *context, QScriptE
 Graph* ComplementGraph::of(const Graph* source)
 {
 	ComplementGraph comp(source);
+	comp.build();
 
 	return comp.clone();
 }

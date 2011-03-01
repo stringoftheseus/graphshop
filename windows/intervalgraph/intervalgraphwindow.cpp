@@ -34,18 +34,18 @@ void IntervalGraphWindow::_build()
 	_toolbar->addSeparator();
 
 
-	QAction* zoomIn = new QAction("+", _toolbar);
+	QAction* zoomIn = new QAction(QIcon("img/zoom_in.png"), "Zoom In", _toolbar);
 	_toolbar->addAction(zoomIn);
 
-	QAction* zoomOut = new QAction("-", _toolbar);
+	QAction* zoomOut = new QAction(QIcon("img/zoom_out.png"), "Zoom Out", _toolbar);
 	_toolbar->addAction(zoomOut);
 
-	QAction* zoomAll = new QAction("A", _toolbar);
+	QAction* zoomAll = new QAction(QIcon("img/view_all.png"), "Zoom Fit", _toolbar);
 	_toolbar->addAction(zoomAll);
 
 	_toolbar->addSeparator();
 
-	QAction* addInterval = new QAction("I+", _toolbar);
+	QAction* addInterval = new QAction(QIcon("img/add_interval_plus.png"), "Add Interval", _toolbar);
 	_toolbar->addAction(addInterval);
 
 

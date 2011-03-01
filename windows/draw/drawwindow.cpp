@@ -6,6 +6,7 @@
 #include "layout/randomlayout.h"
 #include "layout/circlelayout.h"
 #include "layout/gravitylayout.h"
+#include "layout/rotatelayout.h"
 
 #include "drawwindow.h"
 
@@ -31,31 +32,32 @@ void DrawWindow::_build()
 	_toolbar->insertAction(0, _draw->exportAction());
 	_toolbar->addSeparator();
 
+
 	QActionGroup* modeGroup = new QActionGroup(this);
 	connect(modeGroup, SIGNAL(triggered(QAction*)), SLOT(setMode(QAction*)));
 
-	QAction* modeSelect = new QAction("Select", this);
+	QAction* modeSelect = new QAction(QIcon("img/select.png"), "Select", this);
 	modeSelect->setCheckable(true);
 	modeSelect->setChecked(true);
 	modeSelect->setData(GraphDraw::SELECT);
 	modeGroup->addAction(modeSelect);
 
-	QAction* modePan = new QAction("Pan", this);
+	QAction* modePan = new QAction(QIcon("img/pan.png"), "Pan", this);
 	modePan->setCheckable(true);
 	modePan->setData(GraphDraw::PAN);
 	modeGroup->addAction(modePan);
 
-	QAction* modeAddVertex = new QAction("Add Vertex", this);
+	QAction* modeAddVertex = new QAction(QIcon("img/add_vertex_plus.png"), "Add Vertex", this);
 	modeAddVertex->setCheckable(true);
 	modeAddVertex->setData(GraphDraw::ADD_VERTEX);
 	modeGroup->addAction(modeAddVertex);
 
-	QAction* modeAddEdge = new QAction("Add Edge", this);
+	QAction* modeAddEdge = new QAction(QIcon("img/add_edge_plus.png"), "Add Edge", this);
 	modeAddEdge->setCheckable(true);
 	modeAddEdge->setData(GraphDraw::ADD_EDGE);
 	modeGroup->addAction(modeAddEdge);
 
-	QAction* modeAddArc = new QAction("Add Arc", this);
+	QAction* modeAddArc = new QAction(QIcon("img/add_arc_plus.png"), "Add Arc", this);
 	modeAddArc->setCheckable(true);
 	modeAddArc->setData(GraphDraw::ADD_ARC);
 	modeGroup->addAction(modeAddArc);
@@ -63,64 +65,74 @@ void DrawWindow::_build()
 	QMenu* modeMenu = new QMenu(this);
 	modeMenu->addActions(modeGroup->actions());
 
-	QToolButton* modeButton = new QToolButton();
-	modeButton->setText("~");
-	modeButton->setMenu(modeMenu);
-	modeButton->setPopupMode(QToolButton::InstantPopup);
+	_modeButton = new QToolButton();
+	_modeButton->setMenu(modeMenu);
+	_modeButton->setPopupMode(QToolButton::InstantPopup);
 
-	_toolbar->addWidget(modeButton);
+	_toolbar->addWidget(_modeButton);
+
+	modeSelect->trigger();
 
 
 
-	QToolButton* layoutButton = new QToolButton();
-	layoutButton->setText("#");
+	QActionGroup* layoutGroup = new QActionGroup(this);
+	connect(layoutGroup, SIGNAL(triggered(QAction*)), SLOT(layoutChange(QAction*)));
+
+	QAction* layoutRandom = new QAction(QIcon("img/layout_random.png"), "Random Layout", this);
+	//layoutRandom->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_R);
+	layoutRandom->setCheckable(true);
+	layoutGroup->addAction(layoutRandom);
+
+	QAction* layoutCircle = new QAction(QIcon("img/layout_circle.png"), "Circle Layout", this);
+	//layoutCircle->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_C);
+	layoutCircle->setCheckable(true);
+	layoutGroup->addAction(layoutCircle);
+
+	QAction* layoutGravity = new QAction(QIcon("img/layout_gravity.png"), "Gravity Layout", this);
+	//layoutGravity->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_G);
+	layoutGravity->setCheckable(true);
+	layoutGroup->addAction(layoutGravity);
+
 
 	QMenu* layoutMenu = new QMenu(this);
-	layoutButton->setMenu(layoutMenu);
-	layoutButton->setPopupMode(QToolButton::InstantPopup);
+	layoutMenu->addActions(layoutGroup->actions());
 
-	QAction* layoutRandom = new QAction("Random", this);
-	layoutRandom->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_R);
-	layoutMenu->addAction(layoutRandom);
+	_layoutButton = new QToolButton();
+	_layoutButton->setMenu(layoutMenu);
+	_layoutButton->setText("#");
+	_layoutButton->setPopupMode(QToolButton::MenuButtonPopup);
 
-	QAction* layoutCircle = new QAction("Circle", this);
-	layoutCircle->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_C);
-	layoutMenu->addAction(layoutCircle);
-
-	QAction* layoutGravity = new QAction("Gravity", this);
-	layoutGravity->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_G);
-	layoutMenu->addAction(layoutGravity);
-
-	_toolbar->addWidget(layoutButton);
-
+	_toolbar->addWidget(_layoutButton);
+	layoutRandom->trigger();
 
 	_toolbar->addSeparator();
 
 
-	QAction* zoomIn = new QAction("+", _toolbar);
+
+	QAction* zoomIn = new QAction(QIcon("img/zoom_in.png"), "Zoom In", _toolbar);
 	_toolbar->addAction(zoomIn);
 
-	QAction* zoomOut = new QAction("-", _toolbar);
+	QAction* zoomOut = new QAction(QIcon("img/zoom_out.png"), "Zoom Out", _toolbar);
 	_toolbar->addAction(zoomOut);
 
-	QAction* zoomStd = new QAction("0", _toolbar);
+/*	QAction* zoomStd = new QAction("0", _toolbar);
 	_toolbar->addAction(zoomStd);
-
-	QAction* zoomAll = new QAction("A", _toolbar);
+*/
+	QAction* zoomAll = new QAction(QIcon("img/view_all.png"), "Zoom Fit", _toolbar);
 	_toolbar->addAction(zoomAll);
 
 	_toolbar->addSeparator();
 
-	QAction* rotateCW = new QAction(">", _toolbar);
+	QAction* rotateCW = new QAction(QIcon("img/rotate_right.png"), "Rotate Clockwise", _toolbar);
 	_toolbar->addAction(rotateCW);
 
-	QAction* rotateCCW = new QAction("<", _toolbar);
+	QAction* rotateCCW = new QAction(QIcon("img/rotate_left.png"), "Rotate Counterclockwise", _toolbar);
 	_toolbar->addAction(rotateCCW);
 
 
 	connect(zoomIn,        SIGNAL(triggered()), SLOT(zoomIn()));
 	connect(zoomOut,       SIGNAL(triggered()), SLOT(zoomOut()));
-	connect(zoomStd,       SIGNAL(triggered()), SLOT(zoomStd()));
+//	connect(zoomStd,       SIGNAL(triggered()), SLOT(zoomStd()));
 	connect(zoomAll,       SIGNAL(triggered()), SLOT(zoomAll()));
 	connect(rotateCW,      SIGNAL(triggered()), SLOT(rotateCW()));
 	connect(rotateCCW,     SIGNAL(triggered()), SLOT(rotateCCW()));
@@ -175,27 +187,21 @@ void DrawWindow::zoomAll()
 
 void DrawWindow::rotateCW()
 {
-	/* TODO: The ideal effect here would be to rotate the graph, but keep the vertices "in place" so
-			 that the numberic labels on each still print right side up. We can do this by calling
-			 setRotation on each vertexdraw to be this much more in the opposite direction than it
-			 currently is. The tricky part here might be making sure that all new vertexdraws added
-			 after this happens also get rotated accordingly.
-
-			 The other option would be to just not use the built-in rotate functions at all, but
-			 provide a custom layout-like system that does a rotation algorithm itself by moving
-			 each vertex to a new position defined by the requested rotation. This might actually be
-			 simpler in the long run even if it takes way more work now...
-
-			 Also, the latter would allow me to rotate only the selected vertices, not the entire view,
-			 which would be really awesome!
-	*/
-
-	_draw->rotate(22.5);
+	_draw->doLayout(new RotateLayout(22.5), 2);
 }
 
 void DrawWindow::rotateCCW()
 {
-	_draw->rotate(-22.5);
+	_draw->doLayout(new RotateLayout(-22.5), 2);
+}
+
+void DrawWindow::layoutChange(QAction *action)
+{
+	_layoutButton->setIcon(action->icon());
+	_layoutButton->setText(action->text());
+
+	_layoutButton->disconnect();
+	connect(_layoutButton, SIGNAL(clicked()), action, SLOT(trigger()));
 }
 
 void DrawWindow::layoutRandom()
@@ -220,5 +226,7 @@ void DrawWindow::updateTitle()
 
 void DrawWindow::setMode(QAction *action)
 {
+	_modeButton->setIcon(action->icon());
+	_modeButton->setToolTip("Interaction Mode: " + action->text());
 	_draw->setMode(static_cast<GraphDraw::InteractionMode>(action->data().toInt()));
 }

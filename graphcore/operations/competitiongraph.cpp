@@ -15,6 +15,7 @@ QScriptValue CompetitionGraph::sCompetitionGraph(QScriptContext *context, QScrip
 Graph* CompetitionGraph::of(Graph const* source)
 {
 	CompetitionGraph com(source);
+	com.build();
 
 	return com.clone();
 }

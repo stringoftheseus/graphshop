@@ -21,8 +21,8 @@ void AdjMatrixWindow::_build()
 
 	typeBox = new QComboBox();
 
-	typeBox->addItem("Edges", EDGES);
-	typeBox->addItem("Arcs", ARCS);
+	typeBox->addItem(QIcon("img/add_edge.png"), "Edges", EDGES);
+	typeBox->addItem(QIcon("img/add_arc.png"), "Arcs", ARCS);
 
 	_toolbar->addWidget(typeBox);
 
@@ -30,10 +30,10 @@ void AdjMatrixWindow::_build()
 
 
 	arcTable = new QTableWidget(this);
-	arcTable->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
+	arcTable->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked | QAbstractItemView::AnyKeyPressed);
 
 	edgeTable = new QTableWidget(this);
-	edgeTable->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
+	edgeTable->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked | QAbstractItemView::AnyKeyPressed);
 
 
 	foreach(Vertex* vertex, _graph->getVertexSet())

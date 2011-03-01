@@ -62,7 +62,7 @@ QString GraphFormatGSP::loadGraph(QTextStream& source)
 	Graph* graph = gsApp->addNewGraph();
 
 	// 2. Read the file a line at a time and process with a state machine
-	int i;
+        int i=0;
 	enum {GRAPH, ARCADJACENCYMATRIX, EDGEADJACENCYMATRIX} state = GRAPH;
 
 	while(source.atEnd() == false)

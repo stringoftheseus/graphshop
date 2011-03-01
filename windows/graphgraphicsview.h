@@ -12,7 +12,7 @@ public:
 
 	QAction* exportAction();
 
-signals:
+protected:
 
 private slots:
 	void doExport();

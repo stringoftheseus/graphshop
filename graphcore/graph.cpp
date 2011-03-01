@@ -582,6 +582,18 @@ bool Graph::isTrivial()
 	return (vertexCount() == 1);
 }
 
+
+Graph* Graph::getCompetitionGraph() const
+{
+	return CompetitionGraph::of(this);
+}
+
+Graph* Graph::getComplementGraph() const
+{
+	return ComplementGraph::of(this);
+}
+
+
 Graph* Graph::getConverseGraph() const
 {
 	return ConverseGraph::of(this);
@@ -590,4 +602,9 @@ Graph* Graph::getConverseGraph() const
 Graph* Graph::getDominationGraph() const
 {
 	return DominationGraph::of(this);
+}
+
+Graph* Graph::getUnderlyingGraph() const
+{
+	return UnderlyingGraph::of(this);
 }

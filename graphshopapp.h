@@ -14,13 +14,17 @@ public:
 	explicit GraphShopApp(int& argc, char** argv);
 
 	const QList<Graph*> graphList();
+	Q_INVOKABLE Graph* getGraph(int);
+	Q_INVOKABLE int graphCount();
+
 	QScriptEngine* scriptEngine();
 
 signals:
 	void graphAdded(Graph*);
 
 public slots:
-	Graph* addGraph(Graph*);	
+	Graph* addGraph(Graph*);
+
 	Graph* includeGraph(Graph*);
 
 	Graph* addNewGraph(QString label="");

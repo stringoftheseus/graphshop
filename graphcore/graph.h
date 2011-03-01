@@ -11,8 +11,6 @@ class Graph: public QObject
 public:
 	Graph(QObject *parent);
 	Graph(QString graphLabel, QObject* parent);
-
-
 	static QScriptValue sGraph(QScriptContext* context, QScriptEngine* engine);
 
 	~Graph();
@@ -91,8 +89,11 @@ public:
 	Q_INVOKABLE bool isNull();
 	Q_INVOKABLE bool isTrivial();
 
+	Q_INVOKABLE Graph* getCompetitionGraph() const;
+	Q_INVOKABLE Graph* getComplementGraph() const;
 	Q_INVOKABLE Graph* getConverseGraph() const;
 	Q_INVOKABLE Graph* getDominationGraph() const;
+	Q_INVOKABLE Graph* getUnderlyingGraph() const;
 
 
 signals:

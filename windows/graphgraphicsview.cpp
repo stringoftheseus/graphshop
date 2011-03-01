@@ -4,7 +4,7 @@
 
 GraphGraphicsView::GraphGraphicsView(QWidget *parent): QGraphicsView(parent)
 {
-	_exportAction = new QAction("Ex", this);
+	_exportAction = new QAction(QIcon("img/export.png"), "Export Image...", this);
 	connect(_exportAction, SIGNAL(triggered()), SLOT(doExport()));
 }
 

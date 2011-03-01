@@ -23,114 +23,32 @@ void TournamentWindow::_build()
 {
 	_tournament->build();
 
+	draw = new TournamentDraw(_tournament);
+	widget()->layout()->addWidget(draw);
 
-/*
-	QActionGroup* modeGroup = new QActionGroup(this);
-	connect(modeGroup, SIGNAL(triggered(QAction*)), SLOT(setMode(QAction*)));
-
-	QAction* modeSelect = new QAction("Select", this);
-	modeSelect->setCheckable(true);
-	modeSelect->setChecked(true);
-	modeSelect->setData(TournamentDraw::SELECT);
-	modeGroup->addAction(modeSelect);
-
-	QAction* modePan = new QAction("Pan", this);
-	modePan->setCheckable(true);
-	modePan->setData(TournamentDraw::PAN);
-	modeGroup->addAction(modePan);
-
-	QAction* modeAddVertex = new QAction("Add Vertex", this);
-	modeAddVertex->setCheckable(true);
-	modeAddVertex->setData(TournamentDraw::ADD_VERTEX);
-	modeGroup->addAction(modeAddVertex);
-
-	QAction* modeAddEdge = new QAction("Add Edge", this);
-	modeAddEdge->setCheckable(true);
-	modeAddEdge->setData(TournamentDraw::ADD_EDGE);
-	modeGroup->addAction(modeAddEdge);
-
-	QAction* modeAddArc = new QAction("Add Arc", this);
-	modeAddArc->setCheckable(true);
-	modeAddArc->setData(TournamentDraw::ADD_ARC);
-	modeGroup->addAction(modeAddArc);
-
-	QMenu* modeMenu = new QMenu(this);
-	modeMenu->addActions(modeGroup->actions());
-
-	QToolButton* modeButton = new QToolButton();
-	modeButton->setText("~");
-	modeButton->setMenu(modeMenu);
-	modeButton->setPopupMode(QToolButton::InstantPopup);
-
-	_toolbar->addWidget(modeButton);
-*/
-
-/*
-	QToolButton* layoutButton = new QToolButton();
-	layoutButton->setText("#");
-
-	QMenu* layoutMenu = new QMenu(this);
-	layoutButton->setMenu(layoutMenu);
-	layoutButton->setPopupMode(QToolButton::InstantPopup);
-
-	QAction* layoutRandom = new QAction("Random", this);
-	layoutRandom->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_R);
-	layoutMenu->addAction(layoutRandom);
-
-	QAction* layoutCircle = new QAction("Circle", this);
-	layoutCircle->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_C);
-	layoutMenu->addAction(layoutCircle);
-
-	QAction* layoutGravity = new QAction("Gravity", this);
-	layoutGravity->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_G);
-	layoutMenu->addAction(layoutGravity);
-
-	_toolbar->addWidget(layoutButton);
-
-
+	_toolbar->insertAction(0, draw->exportAction());
 	_toolbar->addSeparator();
-*/
 
-	QAction* zoomIn = new QAction("+", _toolbar);
+	QAction* zoomIn = new QAction(QIcon("img/zoom_in.png"), "Zoom In", _toolbar);
 	_toolbar->addAction(zoomIn);
 
-	QAction* zoomOut = new QAction("-", _toolbar);
+	QAction* zoomOut = new QAction(QIcon("img/zoom_out.png"), "Zoom Out", _toolbar);
 	_toolbar->addAction(zoomOut);
 
-	QAction* zoomAll = new QAction("A", _toolbar);
+	QAction* zoomAll = new QAction(QIcon("img/view_all.png"), "Zoom Fit", _toolbar);
 	_toolbar->addAction(zoomAll);
 
 	_toolbar->addSeparator();
 
-	QAction* addVertex = new QAction("V+", _toolbar);
+	QAction* addVertex = new QAction(QIcon("img/add_vertex_plus.png"), "Add Vertex", _toolbar);
 	_toolbar->addAction(addVertex);
 
-
-
-/*
-	_toolbar->addSeparator();
-
-	QAction* rotateCW = new QAction(">", _toolbar);
-	_toolbar->addAction(rotateCW);
-
-	QAction* rotateCCW = new QAction("<", _toolbar);
-	_toolbar->addAction(rotateCCW);
-*/
 
 	connect(zoomIn,        SIGNAL(triggered()), SLOT(zoomIn()));
 	connect(zoomOut,       SIGNAL(triggered()), SLOT(zoomOut()));
 	connect(zoomAll,       SIGNAL(triggered()), SLOT(zoomAll()));
 	connect(addVertex,     SIGNAL(triggered()), SLOT(addVertex()));
 
-/*	connect(rotateCW,      SIGNAL(triggered()), SLOT(rotateCW()));
-	connect(rotateCCW,     SIGNAL(triggered()), SLOT(rotateCCW()));
-	connect(layoutRandom,  SIGNAL(triggered()), SLOT(layoutRandom()));
-	connect(layoutCircle,  SIGNAL(triggered()), SLOT(layoutCircle()));
-	connect(layoutGravity, SIGNAL(triggered()), SLOT(layoutGravity()));
-*/
-
-	draw = new TournamentDraw(_tournament);
-	widget()->layout()->addWidget(draw);
 
 	connect(_tournament->source(), SIGNAL(labelChanged(QString)), SLOT(updateTitle()));
 }

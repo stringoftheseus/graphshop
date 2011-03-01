@@ -15,6 +15,7 @@ QScriptValue ConverseGraph::sConverseGraph(QScriptContext *context, QScriptEngin
 Graph* ConverseGraph::of(const Graph* source)
 {
 	ConverseGraph conv(source);
+	conv.build();
 
 	return conv.clone();
 }
